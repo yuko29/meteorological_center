@@ -1,11 +1,11 @@
 import pymongo
 import json
+import math
 from datetime import datetime
 MAX_PRSERVE_RECORD = 100
 
 
 class mongoDB():
-
 
     def __init__(self):
         self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
@@ -25,6 +25,7 @@ class mongoDB():
         self.db['reservoir'].create_index("time")
         self.db['electricity'].create_index("time")
 
+
     def __dataValid(self, data, functName):
         insert_schema_table = None
         for collection_schema in self.insert_schema:
@@ -40,7 +41,19 @@ class mongoDB():
     def insertEarthquake(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         assert self.__dataValid(data, self.insertEarthquake.__name__) == True
+        magnitude = data.pop('magnitude')
         self.db['earthquake'].insert_one(data)
+        factories = self.db['factory'].find()
+        for fac in factories:
+            for data_fac in magnitude:
+                if(fac['factory'] == data_fac['factory']):
+                    data['magnitude']=data_fac['magnitude']
+                    self.db['factory'].update_one(
+                        {"factory":fac['factory']},
+                        {"$push":{"magnitude":data}}
+                    )
+                    break
+
         return 0
 
     def insertReservoir(self, data):
@@ -82,10 +95,13 @@ class mongoDB():
 
         return 0
 
-    def retrieveEarthquake(self, quantity=1):
+    def retrieveEarthquake(self, quantity=1, factory=None):
         if quantity>MAX_PRSERVE_RECORD:
             print("Exceed")
-        ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        if factory==None:
+            ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        else:
+            ret = ret = self.db['factory'].find({"factory":factory}).limit(min(quantity, MAX_PRSERVE_RECORD))
         return ret
 
 
@@ -111,8 +127,10 @@ class mongoDB():
         result = collection.delete_many({})
         collection = self.db["reservoir"]
         result = collection.delete_many({})
-        result = self.db["mycollection"]
-        result = collection.delete_many({})
+        collection = self.db["factory"]
+        for fac in collection.find({}):
+            collection.update_one({"factory":fac['factory']},{"$set":{"magnitude":[]}})
+
 
 
 # const session = db.getMongo().startSession();
@@ -161,4 +179,3 @@ class mongoDB():
         # Find all documents in the collection
         for document in col.find():
             print(document)
-        

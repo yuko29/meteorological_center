@@ -1,19 +1,42 @@
-self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
+import pymongo
+FACTORIES = [
+    {
+        "factory":"竹",
+        "longitude":121.01,
+        "latitude":24.773,
+        "Si":1.758,
+        "Padj":1.0,
+        "magnitude":[]
 
-with open("./insert_schema.json", "r") as f:
-    self.insert_schema = json.load(f)
+    },
+    {
+        "factory":"中",
+        "longitude":120.618,
+        "latitude":24.2115,
+        "Si":1.063,
+        "Padj":1.0,
+        "magnitude":[]
+    },
+    {
+        "factory":"南",
+        "longitude":120.272,
+        "latitude":23.1135,
+        "Si":1.968,
+        "Padj":1.0,
+        "magnitude":[]
+    }]
 
-self.mapper = {
-    self.insertEarthquake.__name__:"earthquake",
-    self.insertElectricity.__name__:"electricity",
-    self.insertReservoir.__name__:"reservoir"
-}
-
-
-
-
+client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
 # Connect to the "mydatabase" database
-self.db = self.client["meteorological_center"]
-self.db['earthquake'].insert_one()
-self.db['reservoir'].create_index("time")
-self.db['electricity'].create_index("time")
+db = client["meteorological_center"]
+collection = db["factory"]
+result = collection.delete_many({})
+
+for fac in FACTORIES:
+    db['factory'].insert_one(fac)
+
+
+# 廠區 longitude latitude Si Padj
+# 竹 121.01 24.773 1.758 1.0
+# 中 120.618 24.2115 1.063 1.0
+# 南 120.272 23.1135 1.968 1.0

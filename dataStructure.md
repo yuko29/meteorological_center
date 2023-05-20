@@ -1,3 +1,9 @@
+給自己參考用
+
+insert_schema:
+用於確認輸入的資料是否格式正確且沒有遺漏，並非真實結構
+
+```
 [
     {
         "collection_name": "earthquake",
@@ -21,5 +27,13 @@
             "region":"",
             "data":[]
         }
+    },
+    {
+        "collection_name":"factory",
+        schema:{
+            "name":"",
+            
+        }
     }
 ]
+```
