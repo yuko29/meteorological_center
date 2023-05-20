@@ -1,61 +1,19 @@
-import json
+self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
+
+with open("./insert_schema.json", "r") as f:
+    self.insert_schema = json.load(f)
+
+self.mapper = {
+    self.insertEarthquake.__name__:"earthquake",
+    self.insertElectricity.__name__:"electricity",
+    self.insertReservoir.__name__:"reservoir"
+}
 
 
-        self.earthEqake = self.db['earthQuake_latest']
-        self.reservoir = self.db['reservoir']
-        self.electricity = self.db['electricity']
-
-out = []
-collections = ['earthquake', 'reservoir', 'electricity']
-schema = [
-    {
-        'collection_name': 'earthquake', 
-        'time': "str", 
-        'focal_del': "float", 
-        'longitude': "float",
-        'latitude': "float",
-    },
-    {
-        'collection_name':'reservoir',
-        'time': "str",
-        'water_supply': "float",
-        'percentage': "float",
-    },
-    {
-        'collection_name':'electricity',
-        'region':"str",
-        'power_usage':"float",
-        'power_generate':"float",
-        'time':"str",
-    }
-
-        
-        if(functName == self.insertElectricity.__name__):
-            return type(data['region']) == str\
-                    and type(data['power_usage']) == float\
-                    and type(data['power_generate']) == float\
-                    and type(data['time']) == str
-        
-]
 
 
- 
- 
-        if(functName == self.insertEarthquake.__name__):
-            return type(data['time']) == str\
-                    and type(data['M_L']) == float\
-                    and type(data['focal_dep']) == float\
-                    and type(data['longitude']) == float\
-                    and type(data['latitude']) == float
-
-        if(functName == self.insertReservoir.__name__):
-            return type(data['name']) == str\
-                    and type(data['water_supply']) == float\
-                    and type(data['percentage']) == float\
-                    and type(data['time']) == str\
-        
-        if(functName == self.insertElectricity.__name__):
-            return type(data['region']) == str\
-                    and type(data['power_usage']) == float\
-                    and type(data['power_generate']) == float\
-                    and type(data['time']) == str
+# Connect to the "mydatabase" database
+self.db = self.client["meteorological_center"]
+self.db['earthquake'].insert_one()
+self.db['reservoir'].create_index("time")
+self.db['electricity'].create_index("time")

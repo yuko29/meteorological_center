@@ -5,105 +5,114 @@ MAX_PRSERVE_RECORD = 100
 
 
 class mongoDB():
+
+
     def __init__(self):
-        # with open("./schema.json", "w") as f:
-        #     self.schema = json.load(f)
-        # for i in self.schema:
-        #     self.collection['earthquake'] = i['collection_name']
-        # Create a MongoClient object with the IP address of the MongoDB container
         self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
+
+        with open("./insert_schema.json", "r") as f:
+            self.insert_schema = json.load(f)
+
+        self.mapper = {
+            self.insertEarthquake.__name__:"earthquake",
+            self.insertElectricity.__name__:"electricity",
+            self.insertReservoir.__name__:"reservoir"
+        }
+
         # Connect to the "mydatabase" database
         self.db = self.client["meteorological_center"]
-        self.earthquake = self.db['earthquake']
-        self.reservoir = self.db['reservoir']
-        self.electricity = self.db['electricity']
-        self.earthquake.create_index("time")
-        self.reservoir.create_index("time")
-        self.electricity.create_index("time")
-
-
+        self.db['earthquake'].create_index("time")
+        self.db['reservoir'].create_index("time")
+        self.db['electricity'].create_index("time")
 
     def __dataValid(self, data, functName):
-        if(functName == self.insertEarthquake.__name__):
-            return type(data['time']) == str\
-                    and type(data['M_L']) == float\
-                    and type(data['focal_dep']) == float\
-                    and type(data['longitude']) == float\
-                    and type(data['latitude']) == float
-
-        if(functName == self.insertReservoir.__name__):
-            return type(data['name']) == str\
-                    and type(data['water_supply']) == float\
-                    and type(data['percentage']) == float\
-                    and type(data['time']) == str\
-        
-        if(functName == self.insertElectricity.__name__):
-            return type(data['region']) == str\
-                    and type(data['power_usage']) == float\
-                    and type(data['power_generate']) == float\
-                    and type(data['time']) == str
+        insert_schema_table = None
+        for collection_schema in self.insert_schema:
+            if(collection_schema['collection_name'] == self.mapper[functName]):
+                insert_schema_table = collection_schema['schema']
+                break
+            
+        for var, _type in insert_schema_table.items():
+            if type(data[var]) != eval(_type):
+                return False
+        return True
 
     def insertEarthquake(self, data):
-        print(data)
-        try:
-            assert self.__dataValid(data, self.insertEarthquake.__name__) == True
-            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-            self.earthquake.insert_one(data)
-            return 0
-        except KeyError as e:
-            print(f"{e.__class__.__name__} on checking column {e.args}")
-            return 1
-        except Exception as e:
-            print(f"{e.__class__.__name__} occured.")
-            return 1
+        data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
+        assert self.__dataValid(data, self.insertEarthquake.__name__) == True
+        self.db['earthquake'].insert_one(data)
+        return 0
 
     def insertReservoir(self, data):
-        print(data)
-        try:
-            assert self.__dataValid(data, self.insertReservoir.__name__) == True
-            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-            self.reservoir.insert_one(data)
-            return 0
-        except KeyError as e:
-            print(f"{e.__class__.__name__} on checking column {e.args}")
-            return 1
-        except Exception as e:
-            print(f"{e.__class__.__name__} occured.")
-            return 1
+        data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
+        assert self.__dataValid(data, self.insertReservoir.__name__) == True
+        name = data.pop("name")
+
+        if len(list(self.db['reservoir'].find({"name":name}))) == 0:
+            self.db['reservoir'].insert_one(
+                {
+                    "name":name,
+                    "data":[]
+                }
+            )
+
+        self.db['reservoir'].update_one(
+            {"name":name},
+            { "$push":{"data":data}}
+        )
+
+        return 0
 
     def insertElectricity(self, data):
-        print(data)
-        try:
-            assert self.__dataValid(data, self.insertElectricity.__name__) == True
-            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-            self.reservoir.insert_one(data)
-            return 0
-        except KeyError as e:
-            print(f"{e.__class__.__name__} on checking column {e.args}")
-            return 1
-        except Exception as e:
-            print(f"{e.__class__.__name__} occured.")
-            return 1
+        data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
+        assert self.__dataValid(data, self.insertElectricity.__name__) == True
+        region = data.pop('region')
+        if len(list(self.db['electricity'].find({"region":region}))) == 0:
+            self.db['electricity'].insert_one(
+                {
+                    "region":region,
+                    "data":[]
+                }
+            )
+
+        self.db['electricity'].update_one(
+            {"region":region},
+            { "$push":{"data":data}}
+        )
+
+        return 0
 
     def retrieveEarthquake(self, quantity=1):
         if quantity>MAX_PRSERVE_RECORD:
             print("Exceed")
-        ret = self.earthquake.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         return ret
 
 
-    def retrieveElectricity(self, quantity=1):
+    def retrieveElectricity(self, quantity=1, region="北"):
         if quantity>MAX_PRSERVE_RECORD:
             print("Exceed")
-        ret = self.electricity.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        #ret = self.db['electricity'].find({"region":region}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = self.db['electricity'].find({})
         return ret
 
-    def retrieveReservoir(self, quantity=1):
+    def retrieveReservoir(self, quantity=1, name="德基水庫"):
         if quantity>MAX_PRSERVE_RECORD:
             print("Exceed")
-        ret = self.reservoir.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = self.db['reservoir'].find({"name":name}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         return ret
 
+
+    def reset(self):
+        collection = self.db["earthquake"]
+        # Delete all documents in the collection
+        result = collection.delete_many({})
+        collection = self.db["electricity"]
+        result = collection.delete_many({})
+        collection = self.db["reservoir"]
+        result = collection.delete_many({})
+        result = self.db["mycollection"]
+        result = collection.delete_many({})
 
 
 # const session = db.getMongo().startSession();

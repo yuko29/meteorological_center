@@ -22,7 +22,7 @@ print("Formatted Time:", formatted_time)
 
 print("Formatted Time:", formatted_time)
 
-print(type(a))
+print(type(a) == eval("time.struct_time"))
 
 k = "float"
 m = "float"
