@@ -95,27 +95,42 @@ class mongoDB():
 
         return 0
 
-    def retrieveEarthquake(self, quantity=1, factory=None):
+    def retrieveEarthquake(self, quantity=1):
         if quantity>MAX_PRSERVE_RECORD:
-            print("Exceed")
-        if factory==None:
-            ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+            raise Exception("requested quantity exceed.")
+        ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        return ret
+
+
+    def retrieveFactoryEarthquake(self, quantity=1, factory=None):
+        if factory == None:
+            raise Exception("factory not specified.")
+        if quantity>MAX_PRSERVE_RECORD:
+            raise Exception("requested quantity exceed.")
         else:
-            ret = ret = self.db['factory'].find({"factory":factory}).limit(min(quantity, MAX_PRSERVE_RECORD))
+            ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
+            ret = list(ret)[0]['magnitude']
+            return ret
+
+
+    def retrieveElectricity(self, quantity=1, region=None):
+        if region == None:
+            raise Exception("region not specified.")
+            
+        if quantity>MAX_PRSERVE_RECORD:
+            raise Exception("requested quantity exceed.")
+
+        ret = self.db['electricity'].find({"region":region},{"data":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = list(ret)[0]["data"]
         return ret
 
-
-    def retrieveElectricity(self, quantity=1, region="北"):
+    def retrieveReservoir(self, quantity=1, name=None):
+        if name == None:
+            raise Exception("reservoir not specified.")
         if quantity>MAX_PRSERVE_RECORD:
-            print("Exceed")
-        #ret = self.db['electricity'].find({"region":region}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        ret = self.db['electricity'].find({})
-        return ret
-
-    def retrieveReservoir(self, quantity=1, name="德基水庫"):
-        if quantity>MAX_PRSERVE_RECORD:
-            print("Exceed")
-        ret = self.db['reservoir'].find({"name":name}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+            raise Exception("requested quantity exceed.")
+        ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = list(ret)[0]["data"]
         return ret
 
 
