@@ -17,22 +17,26 @@ insert_schema:
     {
         "collection_name":"reservoir",
         "schema":{
-            "name":"",
-            "data":[]
+            "name":"石門水庫",
+            "data":[others]
         }
     },
     {
         "collection_name":"electricity",
         "schema":{
-            "region":"",
-            "data":[]
+            "region":"北",
+            "data":[others]
         }
     },
     {
         "collection_name":"factory",
         schema:{
-            "name":"",
-            
+            "factory":"竹",
+            "longitude":,
+            "latitude":,
+            "Si":,
+            "Padj"
+            "magnitude":[{same_as_earthquake}+{"magnitude":float}]
         }
     }
 ]
