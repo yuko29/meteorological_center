@@ -49,5 +49,24 @@ def get_power_data():
     return jsonify(result)
 
 
+# 傳送地震資料給 frontend
+@app.route('/send_earthquake_data', methods=['POST'])
+def send_earthquake_data():
+    earthquake_data = get_earthquake_data()
+    return jsonify(earthquake_data)
+
+# 傳送水庫資料給 frontend
+@app.route('/send_reservoir_data', methods=['POST'])
+def send_reservoir_data():
+    reservoir_data = get_reservoir_data
+    return jsonify(reservoir_data)
+
+# 傳送供電資料給 frontend
+@app.route('/send_power_data', methods=['POST'])
+def send_power_data():
+    power_data = get_power_data
+    return jsonify(power_data)
+
+
 if __name__ == '__main__':
     app.run()
