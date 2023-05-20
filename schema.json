@@ -1,0 +1,22 @@
+[
+    {
+        "collection_name": "earthquake", 
+        "time": "datetime.datetime", 
+        "focal_del": "float", 
+        "longitude": "float",
+        "latitude": "float"
+    },
+    {
+        "collection_name":"reservoir",
+        "time": "datetime.datetime",
+        "water_supply": "float",
+        "percentage": "float"
+    },
+    {
+        "collection_name":"electricity",
+        "region":"time",
+        "power_usage":"float",
+        "power_generate":"float",
+        "time":"datetime.datetime"
+    }
+]

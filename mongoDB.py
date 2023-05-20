@@ -1,14 +1,27 @@
 import pymongo
+import json
+from datetime import datetime
+MAX_PRSERVE_RECORD = 100
+
 
 class mongoDB():
     def __init__(self):
+        # with open("./schema.json", "w") as f:
+        #     self.schema = json.load(f)
+        # for i in self.schema:
+        #     self.collection['earthquake'] = i['collection_name']
         # Create a MongoClient object with the IP address of the MongoDB container
         self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
         # Connect to the "mydatabase" database
         self.db = self.client["meteorological_center"]
-        self.earthEqake = self.db['earthQuake_latest']
+        self.earthquake = self.db['earthquake']
         self.reservoir = self.db['reservoir']
         self.electricity = self.db['electricity']
+        self.earthquake.create_index("time")
+        self.reservoir.create_index("time")
+        self.electricity.create_index("time")
+
+
 
     def __dataValid(self, data, functName):
         if(functName == self.insertEarthquake.__name__):
@@ -34,7 +47,8 @@ class mongoDB():
         print(data)
         try:
             assert self.__dataValid(data, self.insertEarthquake.__name__) == True
-            self.earthEqake.insert_one(data)
+            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
+            self.earthquake.insert_one(data)
             return 0
         except KeyError as e:
             print(f"{e.__class__.__name__} on checking column {e.args}")
@@ -47,6 +61,7 @@ class mongoDB():
         print(data)
         try:
             assert self.__dataValid(data, self.insertReservoir.__name__) == True
+            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
             self.reservoir.insert_one(data)
             return 0
         except KeyError as e:
@@ -60,6 +75,7 @@ class mongoDB():
         print(data)
         try:
             assert self.__dataValid(data, self.insertElectricity.__name__) == True
+            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
             self.reservoir.insert_one(data)
             return 0
         except KeyError as e:
@@ -68,8 +84,27 @@ class mongoDB():
         except Exception as e:
             print(f"{e.__class__.__name__} occured.")
             return 1
-	
-		
+
+    def retrieveEarthquake(self, quantity=1):
+        if quantity>MAX_PRSERVE_RECORD:
+            print("Exceed")
+        ret = self.earthquake.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        return ret
+
+
+    def retrieveElectricity(self, quantity=1):
+        if quantity>MAX_PRSERVE_RECORD:
+            print("Exceed")
+        ret = self.electricity.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        return ret
+
+    def retrieveReservoir(self, quantity=1):
+        if quantity>MAX_PRSERVE_RECORD:
+            print("Exceed")
+        ret = self.reservoir.find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        return ret
+
+
 
 # const session = db.getMongo().startSession();
 # session.startTransaction();

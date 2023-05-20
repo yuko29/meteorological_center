@@ -22,7 +22,17 @@ print("Formatted Time:", formatted_time)
 
 print("Formatted Time:", formatted_time)
 
+print(type(a))
+
+k = "float"
+m = "float"
+n = 3.14
 
 
-c= ["a"]
-print(type(c) == str)
+
+k = eval(k)
+print(k)
+print(n)
+
+print(type(n) == eval(m))
+
