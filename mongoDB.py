@@ -8,8 +8,7 @@ MAX_PRSERVE_RECORD = 100
 class mongoDB():
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://172.28.138.245:2047/")
-
+        self.client = pymongo.MongoClient("mongodb://172.17.229.144:2047/")
         with open("./insert_schema.json", "r") as f:
             self.insert_schema = json.load(f)
 
@@ -26,6 +25,15 @@ class mongoDB():
         self.db['electricity'].create_index("time")
 
 
+    def filterAnomaly(self, data):
+        t = {}
+        for key, value in data.items():
+            if value == -1.0 or value == "-":
+                continue
+            else:
+                t[key]=value
+        return t
+
     def __dataValid(self, data, functName):
         insert_schema_table = None
         for collection_schema in self.insert_schema:
@@ -41,7 +49,9 @@ class mongoDB():
     def insertEarthquake(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         assert self.__dataValid(data, self.insertEarthquake.__name__) == True
+        data = self.filterAnomaly(data)
         magnitude = data.pop('magnitude')
+        print(data)
         self.db['earthquake'].insert_one(data)
         factories = self.db['factory'].find()
         for fac in factories:
@@ -59,8 +69,12 @@ class mongoDB():
     def insertReservoir(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         assert self.__dataValid(data, self.insertReservoir.__name__) == True
-        name = data.pop("name")
-
+        data = self.filterAnomaly(data)
+        try:
+            name = data.pop("name")
+        except KeyError as e:
+            print(f"Insertion failed. Reservoir name is not provided.")
+            return
         if len(list(self.db['reservoir'].find({"name":name}))) == 0:
             self.db['reservoir'].insert_one(
                 {
@@ -79,7 +93,12 @@ class mongoDB():
     def insertElectricity(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         assert self.__dataValid(data, self.insertElectricity.__name__) == True
-        region = data.pop('region')
+        data = self.filterAnomaly(data)
+        try:
+            region = data.pop('region')
+        except KeyError as e:
+            print(f"Insertion failed. region name is not provided.")
+            return
         if len(list(self.db['electricity'].find({"region":region}))) == 0:
             self.db['electricity'].insert_one(
                 {
