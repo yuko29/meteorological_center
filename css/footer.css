@@ -1,0 +1,9 @@
+/* Footer CSS */
+.footer__container {
+    display: grid;
+    justify-content: center;
+    padding-top: 2%;
+  }
+  .website__rights {
+      color: #fff;
+  }
