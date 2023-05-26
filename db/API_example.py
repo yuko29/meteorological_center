@@ -6,6 +6,10 @@ electricity_test = {'region':"北", 'power_usage':512.3, 'power_generate': 482.1
 electricity_test2 = {'region':"南", 'power_usage':510.3, 'power_generate': 472.1, 'time': "2023-5-12 03:40:52"}
 reservoir_test = {'time':"2023-5-12 03:40:52", 'percentage': 427.6, 'water_supply': 321.2, 'name': "-"}
 reservoir_test2 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "德基水庫"}
+earthEqake_test_list = []
+
+for i in range(10):
+    earthEqake_test_list.append(earthEqake_test)
 
 
 a = mongoDB()
@@ -15,6 +19,7 @@ a = mongoDB()
 
 a.insertEarthquake(earthEqake_test)
 a.insertEarthquake(earthEqake_test2)
+a.insertEarthquake(earthEqake_test_list)
 a.insertElectricity(electricity_test)
 a.insertElectricity(electricity_test2)
 a.insertReservoir(reservoir_test)

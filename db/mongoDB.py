@@ -8,7 +8,7 @@ MAX_PRSERVE_RECORD = 100
 class mongoDB():
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://172.17.229.144:2047/")
+        self.client = pymongo.MongoClient("mongodb://172.24.200.8:2047/")
 
         with open("./insert_schema.json", "r") as f:
             self.insert_schema = json.load(f)
@@ -44,15 +44,20 @@ class mongoDB():
             
         for var, _type in insert_schema_table.items():
             if type(data[var]) != eval(_type):
-                return False
+                if eval(_type) == float:
+                    if type(data[var]) != int:
+                        return False
+                else:
+                    return False
         return True
 
-    def insertEarthquake(self, data):
-        data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
+
+    def __processAndInsertEarthQuake(self, data):
+        if type(data['time']) == str: 
+            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         assert self.__dataValid(data, self.insertEarthquake.__name__) == True
         data = self.filterAnomaly(data)
         magnitude = data.pop('magnitude')
-        print(data)
         self.db['earthquake'].insert_one(data)
         factories = self.db['factory'].find()
         for fac in factories:
@@ -64,6 +69,28 @@ class mongoDB():
                         {"$push":{"magnitude":data}}
                     )
                     break
+    def __filterRedundancyData(self, data):
+        info=[]
+        for i in data:
+            d = {key: value for key, value in i.items() if key != "magnitude"}
+            if type(d['time']) == str:
+                d['time'] = datetime.strptime(d['time'], "%Y-%m-%d %H:%M:%S")
+            info.append( d )
+        db_data = list(self.retrieveEarthquake(quantity = len(data)))
+        print(db_data, end = "\n===\n")
+        print(info, end = "\n===\n")
+        data = [j for i, j in zip(info, data) if i not in db_data]
+        print(data, end = "\n===\n")
+        return data
+
+
+    def insertEarthquake(self, data):
+        if(type(data) == list):
+            data = self.__filterRedundancyData(data)
+            for d in data:
+                self.__processAndInsertEarthQuake(d)
+        else:
+            self.__processAndInsertEarthQuake(data)
 
         return 0
 
@@ -118,7 +145,7 @@ class mongoDB():
     def retrieveEarthquake(self, quantity=1):
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
-        ret = self.db['earthquake'].find().sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
+        ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         return ret
 
 
