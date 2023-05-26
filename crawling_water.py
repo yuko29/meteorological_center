@@ -21,13 +21,13 @@ for re in re_list:
     #print("水情時間: ", water_time) # 水情時間
     
     if stw[6].string == "--":
-        water_avail = -1
+        water_avail = -1.0
     else:
         water_avail = locale.atof(stw[6].string)
     #print("有效蓄水量: ", water_avail) # 有效蓄水量
     
     if stw[7].string == "--":
-        water_per = -1
+        water_per = -1.0
     else:
         water_per = str(stw[7].string).replace(" %","")
         water_per = float(water_per)
