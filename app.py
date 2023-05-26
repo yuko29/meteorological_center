@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-import time
+from mongoDB import mongoDB
+
 
 app = Flask(__name__)
 app.debug = True
@@ -66,6 +67,13 @@ def taichung():
 
     print("click taichung !")
 
+    earthquake_data = db.retrieveEarthquake(1)
+    for data in earthquake_data:
+        print(data)
+    print(data['M_L'])
+    taichung_data['Earthquake_magnitude'] = data['M_L']
+    
+
     return jsonify({'data': taichung_data})
 
 @app.route('/tainan', methods=['GET'])
@@ -96,7 +104,24 @@ def tainan():
 
 
 #-------------------------       database       -------------------------#
- 
+
+db = mongoDB()
+
+
+earthEqake_test = {'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
+earthEqake_test2 = {'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
+electricity_test = {'region':"北", 'power_usage':512.3, 'power_generate': 482.1, 'time': "2023-5-12 03:40:52"}
+electricity_test2 = {'region':"南", 'power_usage':510.3, 'power_generate': 472.1, 'time': "2023-5-12 03:40:52"}
+reservoir_test = {'time':"2023-5-12 03:40:52", 'percentage': 427.6, 'water_supply': 321.2, 'name': "-"}
+reservoir_test2 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "德基水庫"}
+
+db.insertEarthquake(earthEqake_test)
+db.insertEarthquake(earthEqake_test2)
+db.insertElectricity(electricity_test)
+db.insertElectricity(electricity_test2)
+db.insertReservoir(reservoir_test)
+db.insertReservoir(reservoir_test2)
+
 # 配置 MongoDB 連接
 # app.config['MONGO_URI'] = 'mongodb://localhost:27017/mydatabase'
 # mongo = PyMongo(app)

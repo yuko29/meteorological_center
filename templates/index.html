@@ -86,7 +86,7 @@
         const menuLinks = document.querySelector('.navbar__menu');
 
         menu.addEventListener('click', function() {
-            // 使用AJAX請求發送菜單狀態
+            // 使用 AJAX 請求發送菜單狀態
             const xhr = new XMLHttpRequest();
             const menuState = menu.classList.contains('is-active') ? 'active' : 'inactive';
             const menuLinksState = menuLinks.classList.contains('active') ? 'active' : 'inactive';
