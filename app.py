@@ -67,11 +67,11 @@ def taichung():
 
     print("click taichung !")
 
-    earthquake_data = db.retrieveEarthquake(1)
+    earthquake_data = db.retrieveReservoir(1, name="曾文水庫")
     for data in earthquake_data:
         print(data)
-    print(data['M_L'])
-    taichung_data['Earthquake_magnitude'] = data['M_L']
+    print(data['percentage'])
+    taichung_data['Earthquake_magnitude'] = data['percentage']
     
     return jsonify({'data': taichung_data})
 

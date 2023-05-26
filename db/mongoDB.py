@@ -4,11 +4,11 @@ import math
 from datetime import datetime
 MAX_PRSERVE_RECORD = 100
 
-
 class mongoDB():
 
     def __init__(self):
         self.client = pymongo.MongoClient("mongodb://172.24.200.8:2047/")
+
 
         with open("./insert_schema.json", "r") as f:
             self.insert_schema = json.load(f)
