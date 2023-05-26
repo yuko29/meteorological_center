@@ -73,7 +73,6 @@ def taichung():
     print(data['M_L'])
     taichung_data['Earthquake_magnitude'] = data['M_L']
     
-
     return jsonify({'data': taichung_data})
 
 @app.route('/tainan', methods=['GET'])
@@ -82,7 +81,6 @@ def tainan():
     print("click tainan !")
 
     return jsonify({'data': tainan_data})
-
 
 #-------------------------       database       -------------------------#
 
@@ -106,3 +104,4 @@ db.insertReservoir(reservoir_test2)
 
 if __name__ == '__main__':
     app.run(port=5022)
+

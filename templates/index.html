@@ -8,6 +8,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TSMC Meteorological Center</title>
+    <link rel="stylesheet" href="static/main.css" />
+    <link rel="stylesheet" href="static/navbar.css" />
+    <link rel="stylesheet" href="static/reservoir.css" />
+    <link rel="stylesheet" href="static/footer.css" />
     <link rel="stylesheet" href="static/styles.css" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
         integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous" />
@@ -21,7 +25,8 @@
         <div class="navbar__container">
             <a href="/" id="navbar__logo"><img class="logo" src="static/Tsmc.svg.png"></i> Meteorological Center</a>
             <div class="navbar__toggle" id="mobile-menu">
-                <span class="bar"></span> <span class="bar"></span> <span class="bar"></span>
+                <span class="bar"></span> <span class="bar"></span>
+                <span class="bar"></span>
             </div>
             <ul class="navbar__menu">
                 <li class="navbar__item">
@@ -59,18 +64,20 @@
 
         <!-- Reservoir Section -->
         <div class="reservoir__container">
-            <h1>水情資訊</h1> <h1></h1> <h1></h1>
-            <div class="reservoir__content">
-                <h3 id="Reservoir_name_1">一號水庫</h3>
-                <p id="Reservoir_percentage_1">0%</p>
-            </div>
-            <div class="reservoir__content">
-                <h3 id="Reservoir_name_2">二號水庫</h3>
-                <p id="Reservoir_percentage_2">0%</p>
-            </div>
-            <div class="reservoir__content">
-                <h3 id="Reservoir_name_3">三號水庫</h3>
-                <p id="Reservoir_percentage_3">0%</p>
+            <h1>水情資訊</h1>
+            <div class="grid__container">
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_1">一號水庫</h3>
+                    <p id="Reservoir_percentage_1">0%</p>
+                </div>
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_2">二號水庫</h3>
+                    <p id="Reservoir_percentage_2">0%</p>
+                </div>
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_3">永和山水庫</h3>
+                    <p id="Reservoir_percentage_3">0%</p>
+                </div>
             </div>
         </div>
     
@@ -152,6 +159,3 @@
         
     </script>
 </body>
-
-
-</html>
