@@ -8,7 +8,8 @@ MAX_PRSERVE_RECORD = 100
 class mongoDB():
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://169.254.75.166:27017/")
+        self.client = pymongo.MongoClient("mongodb://172.17.229.144:2047/")
+
         with open("./insert_schema.json", "r") as f:
             self.insert_schema = json.load(f)
 
