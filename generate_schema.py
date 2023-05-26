@@ -1,4 +1,5 @@
 import pymongo
+
 FACTORIES = [
     {
         "factory":"竹",
@@ -26,7 +27,7 @@ FACTORIES = [
         "magnitude":[]
     }]
 
-client = pymongo.MongoClient("mongodb://172.17.229.144:2047/")
+client = pymongo.MongoClient("mongodb://172.26.85.148:27017/")
 
 # Connect to the "mydatabase" database
 db = client["meteorological_center"]
