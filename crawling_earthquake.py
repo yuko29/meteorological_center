@@ -2,6 +2,24 @@ import requests
 import re
 import math
 from math import sin, cos, radians
+from mongoDB import mongoDB
+
+
+def crawl_data_ten():
+    earthquake = requests.get("https://scweb.cwb.gov.tw/") #將此頁面的HTML GET下來
+    html_content = earthquake.content.decode('utf-8')
+
+    pattern = re.compile(r'var\s+locations\s*=\s*([^;]+);')
+    matches = pattern.findall(html_content)
+    history = eval(matches[0])
+
+    history_list = []
+    for i in range(10):
+        history_list.append({'time':history[i][2], 'M_L':history[i][3], 'focal_dep': history[i][4], 'longitude': float(history[i][7]), 'latitude': float(history[i][8])})
+        #history_q.put({'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': float(history[0][7]), 'latitude': float(history[0][8])})
+
+    return history_list
+
 
 def crawl_data():
     earthquake = requests.get("https://scweb.cwb.gov.tw/") #將此頁面的HTML GET下來
@@ -11,19 +29,8 @@ def crawl_data():
     pattern = re.compile(r'var\s+locations\s*=\s*([^;]+);')
     matches = pattern.findall(html_content)
     history = eval(matches[0])
-    #print(history)
-    print()
-    print("最近一次地震")
 
-    print("時間: ", history[0][2])
-    print("規模: ", history[0][3])
-    print("地震深度: ", history[0][4])
-    longitude = float(history[0][7])
-    print("東經: ", longitude)
-    latitude = float(history[0][8])
-    print("北緯: ", latitude)
-
-    earthQuake = {'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': longitude, 'latitude': latitude}
+    earthQuake = {'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': float(history[0][7]), 'latitude': float(history[0][8])}
     return earthQuake
     #earthEqake_test = {'time':"2023-5-12 03:40:52", 'M_L':3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7}
 
@@ -103,16 +110,28 @@ def calculate_magnitude(data):
         PGA = 1.657*math.exp(1.533*data['M_L'])*( r **(-1.607))*fac['Si']*fac['Padj']
         PGV = PGA/8.6561
         if PGA>80:
-            print(PGV)
+            #print(PGV)
             fac_magnitude.append( {"factory":fac['factory'], "magnitude":PGV})
         else:
-            print(PGA)
+            #print(PGA)
             fac_magnitude.append({"factory":fac['factory'], "magnitude":PGA})
 
-    earthQuake['magnitude'] = fac_magnitude
+    data['magnitude'] = fac_magnitude
+    return(data)
 
-earthQuake = crawl_data()
-calculate_magnitude(earthQuake)
+def get_new_update():
+    crawled = crawl_data()
+    eq_with_mag = calculate_magnitude(crawled)
+
+
+
+earthQuake_list = crawl_data_ten()
+for earthQuake in earthQuake_list:
+    earthQuake = calculate_magnitude(earthQuake)
+a = mongoDB()
+#a.insertEarthquake(earthEqake_list)
+a.insertEarthquake(earthQuake_list[0])
 
 #{'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
-print(earthQuake)
+
+#print(earthQuake_list)
