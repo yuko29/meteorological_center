@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!--
+      Site created by Brian Design on youtube @ www.youtube.com/channel/UCsKsymTY_4BYR-wytLjex7A?view_as=subscriber
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TSMC Meteorological Center</title>
+    <link rel="stylesheet" href="static/main.css" />
+    <link rel="stylesheet" href="static/navbar.css" />
+    <link rel="stylesheet" href="static/reservoir.css" />
+    <link rel="stylesheet" href="static/footer.css" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.14.0/css/all.css"
+        integrity="sha384-HzLeBuhoNPvSl5KYnjx0BT+WB0QEEqLprO+NBkkk5gbc67FTaL7XIGa2w1L0Xbgc" crossorigin="anonymous" />
+    <link href="https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+
+
+<body>
+    <!-- Navbar Section -->
+    <nav class="navbar">
+        <div class="navbar__container">
+            <a href="/" id="navbar__logo"><img class="logo" src="static/Tsmc.svg.png"></i> Meteorological Center</a>
+            <div class="navbar__toggle" id="mobile-menu">
+                <span class="bar"></span> <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="navbar__menu">
+                <li class="navbar__item">
+                    <a href="" class="navbar__links" id="hsinchu">Hsinchu</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="" class="navbar__links" id="taichung">Taichung</a>
+                </li>
+                <li class="navbar__item">
+                    <a href="" class="navbar__links" id="tainan">Tainan</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Electricity and Earthquake Section-->
+    <div class="main">
+        <div class="main__container">
+            <div class="main__content">
+                <h1>電力</h1>
+                <h3>即時發電量</h3>
+                <p id="Electricity_value">0</p>
+                <h3>當日最大發電容量</h3>
+                <p id="Electricity_maximum">0</p>
+            </div>
+            <div class="main__content">
+                <h1>地震</h1>
+                <h3>最近發生時間</h3>
+                <p id="Earthquake_time">01/01 00:00</p>
+                <h3>震度</h3>
+                <p id="Earthquake_magnitude">0強</p>
+                <h3></h3>
+            </div>
+        </div>
+
+        <!-- Reservoir Section -->
+        <div class="reservoir__container">
+            <h1>水情資訊</h1>
+            <div class="grid__container">
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_1">一號水庫</h3>
+                    <p id="Reservoir_percentage_1">0%</p>
+                </div>
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_2">二號水庫</h3>
+                    <p id="Reservoir_percentage_2">0%</p>
+                </div>
+                <div class="reservoir__content">
+                    <h3 id="Reservoir_name_3">永和山水庫</h3>
+                    <p id="Reservoir_percentage_3">0%</p>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Footer Section -->
+        <div class="footer__container">
+                <p class="website__rights">© 2023 Cloud Native. All rights reserved</p>
+        </div>
+    </div>
+
+    <script>
+        // RWD Design
+        const menu = document.querySelector('#mobile-menu');
+        const menuLinks = document.querySelector('.navbar__menu');
+
+        menu.addEventListener('click', function() {
+            // 使用 AJAX 請求發送菜單狀態
+            const xhr = new XMLHttpRequest();
+            const menuState = menu.classList.contains('is-active') ? 'active' : 'inactive';
+            const menuLinksState = menuLinks.classList.contains('active') ? 'active' : 'inactive';
+            const url = '/toggle_menu?menu_state=' + menuState + '&menu_links_state=' + menuLinksState;
+
+            xhr.open('GET', url, true);
+            xhr.send();
+        });
+
+        // 獲取連結
+        const hsinchuLink = document.querySelector('#hsinchu');
+        const taichungLink = document.querySelector('#taichung');
+        const tainanLink = document.querySelector('#tainan');
+        
+        // 定義共用的點擊事件處理函數
+        function handle_click(event, url) {
+            event.preventDefault(); // 阻止超連結的默認行為
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', url, true);
+            xhr.send();
+
+            // 接收響應並更新頁面數據
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    // 接收頁面數據
+                    const response = JSON.parse(xhr.responseText);
+                    // 更新頁面數據
+                    update_data(response.data)
+                }
+            };
+        }
+
+        // 添加點擊事件監聽器
+        hsinchuLink.addEventListener('click', function(event) {handle_click(event, '/hsinchu');});
+        taichungLink.addEventListener('click', function(event) {handle_click(event, '/taichung');});
+        tainanLink.addEventListener('click', function(event) {handle_click(event, '/tainan');});
+
+        function update_data(data) {
+            // 獲取需要更新的元素
+            const electricityValueElement = document.getElementById('Electricity_value');
+            const electricityMaximumElement = document.getElementById('Electricity_maximum');
+            const earthquakeTimeElement = document.getElementById('Earthquake_time');
+            const earthquakeMagnitudeElement = document.getElementById('Earthquake_magnitude');
+            const reservoirName1Element = document.getElementById('Reservoir_name_1');
+            const reservoirPercentage1Element = document.getElementById('Reservoir_percentage_1');
+            const reservoirName2Element = document.getElementById('Reservoir_name_2');
+            const reservoirPercentage2Element = document.getElementById('Reservoir_percentage_2');
+            const reservoirName3Element = document.getElementById('Reservoir_name_3');
+            const reservoirPercentage3Element = document.getElementById('Reservoir_percentage_3');
+        
+            // 更新元素的內容為最新的數據
+            electricityValueElement.textContent = data.Electricity_value;
+            electricityMaximumElement.textContent = data.Electricity_maximum;
+            earthquakeTimeElement.textContent = data.Earthquake_time;
+            earthquakeMagnitudeElement.textContent = data.Earthquake_magnitude;
+            reservoirName1Element.textContent = data.Reservoir_name_1;
+            reservoirPercentage1Element.textContent = data.Reservoir_percentage_1;
+            reservoirName2Element.textContent = data.Reservoir_name_2;
+            reservoirPercentage2Element.textContent = data.Reservoir_percentage_2;
+            reservoirName3Element.textContent = data.Reservoir_name_3;
+            reservoirPercentage3Element.textContent = data.Reservoir_percentage_3;
+        }
+        
+    </script>
+</body>

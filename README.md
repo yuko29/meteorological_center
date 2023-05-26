@@ -1,5 +1,33 @@
 # meteorological_center
 
+## Score Criteria
+- 程式可以成功啟起來 – 50%
+- 滿足User requirements – 20 %
+- 簡報 (含user story, UI Design introduction, Architecture, and demo) – 10%
+- Code with unit test(w12) – 5%
+- Monitor metrics(w15) – 5%
+- Follow 12 factors(w1) –每一項+1分→ 以簡報敘述，埋在扣裡不算！
+  1. Codebase
+  2. Dependencies
+  3. Config
+  4. Backing Services
+  5. Build, Release, Run
+  6. Processes
+  7. Port Binding
+  8. Concurrency
+  9. Disposability
+  10. Dev/Prod Parity
+  11. Logs
+  12. Admin Processes
+
+
+## User requirements
+- TSMC Meteorological center
+  1. 成功爬取並呈現 1.水庫水情 2.電力負載狀況 3.地震歷史紀錄，
+  各項皆5%，共15%
+  2. 完成其他額外功能符合user story分數往上增加
+
+
 ## User Story
 
 ### Version 1
