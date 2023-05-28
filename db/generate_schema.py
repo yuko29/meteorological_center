@@ -1,4 +1,6 @@
 import pymongo
+from db_config import IP, PORT
+
 FACTORIES = [
     {
         "factory":"竹",
@@ -26,7 +28,7 @@ FACTORIES = [
         "magnitude":[]
     }]
 
-client = pymongo.MongoClient("mongodb://172.24.200.8:2047/")
+client = pymongo.MongoClient(f"mongodb://{IP}:{PORT}/")
 
 # Connect to the "mydatabase" database
 db = client["meteorological_center"]
