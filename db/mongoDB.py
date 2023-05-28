@@ -2,17 +2,17 @@ import pymongo
 import json
 import math
 from datetime import datetime
-MAX_PRSERVE_RECORD = 100
+from db_config import IP, PORT, MAX_PRSERVE_RECORD
+
 
 class mongoDB():
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://172.24.200.8:2047/")
-
+        self.client = pymongo.MongoClient(f"mongodb://{IP}:{PORT}/")
 
         with open("./insert_schema.json", "r") as f:
-            self.insert_schema = json.load(f)
-
+            self.insert_schema = json.load(f)   
+        self.factory_list = ["竹", "中", "南"]
         self.mapper = {
             self.insertEarthquake.__name__:"earthquake",
             self.insertElectricity.__name__:"electricity",
@@ -24,7 +24,6 @@ class mongoDB():
         self.db['earthquake'].create_index("time")
         self.db['reservoir'].create_index("time")
         self.db['electricity'].create_index("time")
-
 
     def filterAnomaly(self, data):
         t = {}
@@ -69,6 +68,7 @@ class mongoDB():
                         {"$push":{"magnitude":data}}
                     )
                     break
+                         
     def __filterRedundancyData(self, data):
         info=[]
         for i in data:
@@ -148,17 +148,17 @@ class mongoDB():
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         return ret
 
-
     def retrieveFactoryEarthquake(self, quantity=1, factory=None):
         if factory == None:
-            raise Exception("factory not specified.")
+            raise Exception("factory is not specified.")
+        if factory not in self.factory_list:
+            raise Exception(f"Invalid factory's name. It should be {self.factory_list}")
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         else:
             ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
             ret = list(ret)[0]['magnitude']
             return ret
-
 
     def retrieveElectricity(self, quantity=1, region=None):
         if region == None:
@@ -179,7 +179,6 @@ class mongoDB():
         ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = list(ret)[0]["data"]
         return ret
-
 
     def reset(self):
         collection = self.db["earthquake"]
