@@ -1,4 +1,5 @@
 data
-venv
+venv/
 __pycache__
-crawl-env
+crawl-venv/
+db-dump

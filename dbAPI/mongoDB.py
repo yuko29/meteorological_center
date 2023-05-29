@@ -7,12 +7,12 @@ MAX_PRSERVE_RECORD = 100
 class mongoDB():
 
     def __init__(self):
-        self.client = pymongo.MongoClient("mongodb://localhost:27017/")
+        self.client = pymongo.MongoClient("mongodb://mongo:27017/")
 
 
         with open("./dbAPI/insert_schema.json", "r") as f:
-            self.insert_schema = json.load(f)
-
+            self.insert_schema = json.load(f)   
+        self.factory_list = ["竹", "中", "南"]
         self.mapper = {
             self.insertEarthquake.__name__:"earthquake",
             self.insertElectricity.__name__:"electricity",
@@ -24,7 +24,6 @@ class mongoDB():
         self.db['earthquake'].create_index("time")
         self.db['reservoir'].create_index("time")
         self.db['electricity'].create_index("time")
-
 
     def filterAnomaly(self, data):
         t = {}
@@ -69,6 +68,7 @@ class mongoDB():
                         {"$push":{"magnitude":data}}
                     )
                     break
+                         
     def __filterRedundancyData(self, data):
         info=[]
         for i in data:
@@ -99,9 +99,10 @@ class mongoDB():
         assert self.__dataValid(data, self.insertReservoir.__name__) == True
         data = self.filterAnomaly(data)
         try:
+            print(data)
             name = data.pop("name")
         except KeyError as e:
-            print(f"Insertion failed. Reservoir name is not provided.")
+            print(f"Insertion failed. Reservoir name is not provided or is anomoly (-).\n data = {data}")
             return
         if len(list(self.db['reservoir'].find({"name":name}))) == 0:
             self.db['reservoir'].insert_one(
@@ -146,19 +147,26 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        return ret
-
+        if len(list(ret)) == 0:
+            ret = []
+            ret.append({'time': None, 'M_L': -1.0, 'focal_dep': -1.0, 'longitude': -1.0, 'latitude': -1.0})
+        return list(ret)
 
     def retrieveFactoryEarthquake(self, quantity=1, factory=None):
         if factory == None:
-            raise Exception("factory not specified.")
+            raise Exception("factory is not specified.")
+        if factory not in self.factory_list:
+            raise Exception(f"Invalid factory's name. It should be {self.factory_list}")
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         else:
             ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
-            ret = list(ret)[0]['magnitude']
-            return ret
-
+        try:
+            ret = list(ret)[0]["data"]
+        except:
+            ret = []
+            ret.append({'time': None, 'M_L': -1, 'focal_dep': -1, 'longitude': -1, 'latitude': -1, 'magnitude': -1})
+        return ret
 
     def retrieveElectricity(self, quantity=1, region=None):
         if region == None:
@@ -168,7 +176,11 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
 
         ret = self.db['electricity'].find({"region":region},{"data":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
-        ret = list(ret)[0]["data"]
+        try:
+            ret = list(ret)[0]["data"]
+        except:
+            ret = []
+            ret.append({'power_usage': -1.0, 'power_generate': -1.0, 'time': None})
         return ret
 
     def retrieveReservoir(self, quantity=1, name=None):
@@ -177,9 +189,12 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        ret = list(ret)[0]["data"]
+        try:
+            ret = list(ret)[0]["data"]
+        except:
+            ret = []
+            ret.append({'time':None, 'percentage': -1.0, 'water_supply': -1.0, 'name': name})
         return ret
-
 
     def reset(self):
         collection = self.db["earthquake"]

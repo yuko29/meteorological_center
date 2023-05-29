@@ -1,0 +1,32 @@
+services:
+  mongo:
+    build:
+      context: db
+      target: DB
+    # image: "mongo:latest"
+    restart: unless-stopped
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db/config/mongod.yml:/resource/mongod.yml
+      # - ./db-dump:/db-dump
+      # - ./db/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
+    networks:
+      - backend
+  web:
+    build:
+      context: ./
+      target: builder
+    ports:
+      - '5000:5000'
+    networks:
+      - backend
+    environment:
+      WAIT_HOST: mongo:27017
+    depends_on:
+      - mongo
+
+networks:
+  backend: 
+    driver: bridge

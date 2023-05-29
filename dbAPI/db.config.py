@@ -1,0 +1,3 @@
+IP = "mongo"
+PORT = "27017"
+MAX_PRSERVE_RECORD = 100
