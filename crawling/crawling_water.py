@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import requests
 import locale
-from mongoDB import mongoDB
+from dbAPI.mongoDB import mongoDB
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 

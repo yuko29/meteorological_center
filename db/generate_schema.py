@@ -26,7 +26,7 @@ FACTORIES = [
         "magnitude":[]
     }]
 
-client = pymongo.MongoClient("mongodb://172.24.200.8:2047/")
+client = pymongo.MongoClient("mongodb://localhost:27017/")
 
 # Connect to the "mydatabase" database
 db = client["meteorological_center"]

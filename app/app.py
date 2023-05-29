@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
-from mongoDB import mongoDB
+from dbAPI.mongoDB import mongoDB
 
 
 app = Flask(__name__)
@@ -103,5 +103,5 @@ db.insertReservoir(reservoir_test2)
 
 
 if __name__ == '__main__':
-    app.run(port=5022)
+    app.run(host='0.0.0.0', port=5000)
 

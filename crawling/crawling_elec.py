@@ -1,6 +1,6 @@
 import requests
 import re
-from mongoDB import mongoDB
+from dbAPI.mongoDB import mongoDB
 
 elec = requests.get("https://www.taiwanstat.com/powers/latest/") #將此頁面的HTML GET下來
 #print(elec.text) #印出HTML
