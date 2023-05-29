@@ -1,5 +1,18 @@
 # meteorological_center
 
+
+## Getting Start
+
+To start up the app:
+```
+$ docker compose up
+```
+
+To stop and delete all the containers:
+```
+$ docker compose down
+```
+
 ## Score Criteria
 - 程式可以成功啟起來 – 50%
 - 滿足User requirements – 20 %
