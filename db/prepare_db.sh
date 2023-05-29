@@ -1,6 +1,6 @@
 docker network create --subnet=172.18.0.0/16 st-final
 docker run --publish 27017:27017\
-           --ip 172.17.0.2 \
+           --ip 172.20.63.46 \
 --name my-mongodb \
            -d mongo
 
