@@ -147,10 +147,13 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        if len(list(ret)) == 0:
+        ret = [x for x in ret]
+        if len(ret,) == 0:
             ret = []
             ret.append({'time': None, 'M_L': -1.0, 'focal_dep': -1.0, 'longitude': -1.0, 'latitude': -1.0})
-        return list(ret)
+        return ret
+
+
 
     def retrieveFactoryEarthquake(self, quantity=1, factory=None):
         if factory == None:
@@ -161,11 +164,11 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
         else:
             ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
-        try:
-            ret = list(ret)[0]["data"]
-        except:
-            ret = []
-            ret.append({'time': None, 'M_L': -1, 'focal_dep': -1, 'longitude': -1, 'latitude': -1, 'magnitude': -1})
+            
+            ret = [x['magnitude'] for x in ret]
+            if len(ret) == 0:
+                ret = []
+                ret.append({'time': None, 'M_L': -1, 'focal_dep': -1, 'longitude': -1, 'latitude': -1, 'magnitude': -1})
         return ret
 
     def retrieveElectricity(self, quantity=1, region=None):
@@ -176,9 +179,8 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
 
         ret = self.db['electricity'].find({"region":region},{"data":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
-        try:
-            ret = list(ret)[0]["data"]
-        except:
+        ret = [x['data'] for x in ret][0]
+        if(len(ret) == 0):
             ret = []
             ret.append({'power_usage': -1.0, 'power_generate': -1.0, 'time': None})
         return ret
@@ -189,9 +191,8 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        try:
-            ret = list(ret)[0]["data"]
-        except:
+        ret = [x['data'] for x in ret][0]
+        if(len(ret) == 0):
             ret = []
             ret.append({'time':None, 'percentage': -1.0, 'water_supply': -1.0, 'name': name})
         return ret
