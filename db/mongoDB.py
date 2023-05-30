@@ -187,7 +187,7 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
-        ret = [x['data'] for x in ret][0]
+        ret = [x['data'] for x in ret]
         if(len(ret) == 0):
             ret = []
             ret.append({'time':None, 'percentage': -1.0, 'water_supply': -1.0, 'name': name})

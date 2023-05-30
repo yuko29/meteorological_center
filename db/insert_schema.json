@@ -5,7 +5,9 @@
             "time": "datetime", 
             "focal_dep": "float", 
             "longitude": "float",
-            "latitude": "float"
+            "latitude": "float",
+            "magnitude": "list"
+
         }
     },
     {

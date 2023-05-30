@@ -19,9 +19,9 @@ a = mongoDB()
 
 a.insertEarthquake(earthEqake_test)
 a.insertEarthquake(earthEqake_test2)
-# a.insertEarthquake(earthEqake_test_list)
-# a.insertElectricity(electricity_test)
-# a.insertElectricity(electricity_test2)
+a.insertEarthquake(earthEqake_test_list)
+a.insertElectricity(electricity_test)
+a.insertElectricity(electricity_test2)
 a.insertReservoir(reservoir_test)
 a.insertReservoir(reservoir_test2)
 
@@ -30,20 +30,20 @@ print(a.retrieveReservoir(50, "德基水庫"))
 for i in a.retrieveReservoir(50, "2"):
     print(i)
 
-# print(f"\n\n\nRETRIEVING ELECTRICITY...\n\n")
+print(f"\n\n\nRETRIEVING ELECTRICITY...\n\n")
 
-# for i in a.retrieveElectricity(52, "北"):
-#     print(i)
+for i in a.retrieveElectricity(52, "北"):
+    print(i)
 
 print(f"\n\n\nRETRIEVING EARTHQUAKE...\n\n")
 print(list(a.retrieveEarthquake(52)))
 for i in a.retrieveEarthquake(52):
     print(i)
 
-# print(f"\n\n\nRETRIEVING EARTHQUAKE FOR FACTORY...\n\n")
+print(f"\n\n\nRETRIEVING EARTHQUAKE FOR FACTORY...\n\n")
 
-# for i in a.retrieveFactoryEarthquake(factory = "竹"):
-#     print(i)
+for i in a.retrieveFactoryEarthquake(factory = "竹"):
+    print(i)
 
 a.reset()
 
