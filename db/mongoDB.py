@@ -77,10 +77,7 @@ class mongoDB():
                 d['time'] = datetime.strptime(d['time'], "%Y-%m-%d %H:%M:%S")
             info.append( d )
         db_data = list(self.retrieveEarthquake(quantity = len(data)))
-        print(db_data, end = "\n===\n")
-        print(info, end = "\n===\n")
         data = [j for i, j in zip(info, data) if i not in db_data]
-        print(data, end = "\n===\n")
         return data
 
 
@@ -99,7 +96,6 @@ class mongoDB():
         assert self.__dataValid(data, self.insertReservoir.__name__) == True
         data = self.filterAnomaly(data)
         try:
-            print(data)
             name = data.pop("name")
         except KeyError as e:
             print(f"Insertion failed. Reservoir name is not provided or is anomoly (-).\n data = {data}")
