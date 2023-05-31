@@ -12,7 +12,7 @@ from strongtyping.strong_typing import match_class_typing
 
 @match_class_typing(excep_raise=TypeError)
 class Database():
-    def __init__(self, IP: str, PORT: int, db_name: str):
+    def __init__(self, IP: str, PORT: str, db_name: str):
         self.client = pymongo.MongoClient(f"mongodb://{IP}:{PORT}/")
         self.db = self.client[db_name]   # init database
 
