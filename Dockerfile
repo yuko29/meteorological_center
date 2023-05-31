@@ -23,4 +23,4 @@ EXPOSE 5000
 
 # ENTRYPOINT ["python3"]
 # CMD ["app.py"]
-CMD /wait && /app/launch.sh
+CMD /app/launch.sh

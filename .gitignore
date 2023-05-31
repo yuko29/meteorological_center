@@ -3,3 +3,4 @@ venv/
 __pycache__
 crawl-venv/
 db-dump
+db-dump.zip

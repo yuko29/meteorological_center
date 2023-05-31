@@ -1,17 +1,15 @@
 services:
   mongo:
-    build:
-      context: db
-      target: DB
-    # image: "mongo:latest"
+    # build:
+    #   context: db
+    #   target: DB
+    image: "mongo:latest"
     restart: unless-stopped
     container_name: mongodb
     ports:
       - 27017:27017
     volumes:
-      - ./db/config/mongod.yml:/resource/mongod.yml
-      # - ./db-dump:/db-dump
-      # - ./db/mongorestore.sh:/docker-entrypoint-initdb.d/mongorestore.sh
+      - ./db/data:/data/db
     networks:
       - backend
   web:
