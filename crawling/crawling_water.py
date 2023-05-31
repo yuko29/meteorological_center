@@ -1,9 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-import locale
 from mongoDB import mongoDB
-
-locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 
 water = requests.get("https://fhy.wra.gov.tw/ReservoirPage_2011/Statistics.aspx") #將此頁面的HTML GET下來
 #print(water.text) #印出HTML
@@ -24,7 +21,7 @@ for re in re_list:
     if stw[6].string == "--":
         water_avail = -1.0
     else:
-        water_avail = locale.atof(stw[6].string)
+        water_avail =float(stw[6].string.replace(',',''))
     
     if stw[7].string == "--":
         water_per = -1.0
