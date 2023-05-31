@@ -21,7 +21,7 @@ for re in re_list:
     if stw[6].string == "--":
         water_avail = -1.0
     else:
-        water_avail =float(stw[6].string.replace(',',''))
+        water_avail = float(stw[6].string.replace(',',''))
     
     if stw[7].string == "--":
         water_per = -1.0
