@@ -39,9 +39,32 @@ class MongoDBTest(unittest.TestCase):
             self.instance.retrieve_data = MagicMock(side_effect=self.instance.db[case["collection"]].find)
             self.instance.insert_data(case["collection"], case)
             retrieved_data = [x for x in self.instance.retrieve_data({}, {})][0]
-            print(case)
-            print(retrieved_data)
             self.assertEqual(case, retrieved_data)
+
+
+    def test_retrieveData(self):
+        self.setUp()
+        cases =[
+            {
+                "collection":"a_collection",
+                "name":"Andy",
+                "sex":"Male",
+                "money":32
+            },
+            {
+                "collection":"a_collection",
+                "name":"Nina",
+                "sex":0,
+                "money":"32"
+            }
+        ]
+        for case in cases:
+            self.__tearDown(case['collection'])
+            self.instance.insert_data(case["collection"], case)
+            ret = [x for x in self.instance.retrieve_data(case["collection"], condition = {}, value = {})][0]
+            self.assertEqual(ret, case)
+
+
 
     #def retrieve_data(self, collection, condition = {}, value = {"_id":0}, sort=('_id',1), limit=1):
 
