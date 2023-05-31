@@ -7,6 +7,10 @@ from db_config import IP, PORT, MAX_PRSERVE_RECORD
 
 class mongoDB():
 
+    """
+    Connect to mongoDB Server with provided ip:port, and map every provided API to specific db collection.
+    The schema for insertion API is defined in ./insert_schema.json, which would be used to check type correctness of given data.
+    """
     def __init__(self):
         self.client = pymongo.MongoClient(f"mongodb://{IP}:{PORT}/")
 
@@ -18,13 +22,13 @@ class mongoDB():
             self.insertElectricity.__name__:"electricity",
             self.insertReservoir.__name__:"reservoir"
         }
-
-        # Connect to the "mydatabase" database
         self.db = self.client["meteorological_center"]
         self.db['earthquake'].create_index("time")
         self.db['reservoir'].create_index("time")
         self.db['electricity'].create_index("time")
 
+
+    # If given data dictionary has some value that is marked as NULL, remove key:value from data
     def filterAnomaly(self, data):
         t = {}
         for key, value in data.items():
@@ -34,6 +38,8 @@ class mongoDB():
                 t[key]=value
         return t
 
+    # Check the value type of input dictionary data based on input_schema,
+    # return false if unmatched data type is detected, and raise KeyError if key is missed
     def __dataValid(self, data, functName):
         insert_schema_table = None
         for collection_schema in self.insert_schema:
@@ -50,7 +56,7 @@ class mongoDB():
                     return False
         return True
 
-
+    # insert earthquake data into DB
     def __processAndInsertEarthQuake(self, data):
         if type(data['time']) == str: 
             data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
@@ -59,6 +65,8 @@ class mongoDB():
         magnitude = data.pop('magnitude')
         self.db['earthquake'].insert_one(data)
         factories = self.db['factory'].find()
+
+        # Organize the structure of data to fit 'factory' collection, and then update the document
         for fac in factories:
             for data_fac in magnitude:
                 if(fac['factory'] == data_fac['factory']):
@@ -68,20 +76,23 @@ class mongoDB():
                         {"$push":{"magnitude":data}}
                     )
                     break
-                         
-    def __filterRedundancyData(self, data):
+
+    # check if any elements in given data list is already exist in the DB. If so, remove redundant records from input data list.
+    # Caution: This method is only work for insert_earth_quake 
+    def __filterRedundancyData(self, datas):
         info=[]
-        for i in data:
+        for i in datas:
             d = {key: value for key, value in i.items() if key != "magnitude"}
             if type(d['time']) == str:
                 d['time'] = datetime.strptime(d['time'], "%Y-%m-%d %H:%M:%S")
             info.append( d )
-        db_data = list(self.retrieveEarthquake(quantity = len(data)))
-        data = [j for i, j in zip(info, data) if i not in db_data]
-        return data
+        db_data = list(self.retrieveEarthquake(quantity = len(datas)))
+        datas = [j for i, j in zip(info, datas) if i not in db_data]
+        return datas
 
 
     def insertEarthquake(self, data):
+        # the input of data may contain many records (list type) or only contain one record (dict type)
         if(type(data) == list):
             data = self.__filterRedundancyData(data)
             for d in data:
@@ -145,7 +156,7 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = [x for x in ret]
-
+        print(ret)
         # If no matched data exist in the db
         if len(ret,) == 0:
             ret = []
@@ -200,9 +211,10 @@ class mongoDB():
             ret.append({'time':None, 'percentage': -1.0, 'water_supply': -1.0, 'name': name})
         return ret
 
+    # Delete all datas of assigned DB in MongoDB server, proceed with caution!
     def reset(self):
         collection = self.db["earthquake"]
-        # Delete all documents in the collection
+
         result = collection.delete_many({})
         collection = self.db["electricity"]
         result = collection.delete_many({})
@@ -212,51 +224,3 @@ class mongoDB():
         for fac in collection.find({}):
             collection.update_one({"factory":fac['factory']},{"$set":{"magnitude":[]}})
 
-
-
-# const session = db.getMongo().startSession();
-# session.startTransaction();
-
-# try {
-#   // Read the documents and count the size within the transaction
-#   const documents = db.yourCollectionName.find({}, { projection: { _id: 1 } }).toArray();
-#   const collectionSize = documents.length;
-
-#   if (collectionSize > 100) {
-#     // Sort the documents by _id and delete the oldest document
-#     const oldestDocument = db.yourCollectionName.findOneAndDelete(
-#       {},
-#       { sort: { _id: 1 }, collation: { locale: "en_US", numericOrdering: true } }
-#     );
-
-#     // Commit the transaction
-#     session.commitTransaction();
-
-#     // Use the `oldestDocument` if needed for further processing or logging
-#   } else {
-#     // Abort the transaction if the collection size is not greater than 100
-#     session.abortTransaction();
-#   }
-# } finally {
-#   // End the transaction and release the session
-#   session.endSession();
-# }
-
-
-
-
-
-
-    def exampleAPI(self):
-        # Connect to the "mycollection" collection
-        col = self.db["mycollection"]
-
-        # Insert a document into the collection
-        document = {"name": "John", "age": 30}
-        col.insert_one(document)
-
-    def exampleAPI2(self):
-        col = self.db["mycollection"]
-        # Find all documents in the collection
-        for document in col.find():
-            print(document)
