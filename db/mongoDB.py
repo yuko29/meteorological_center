@@ -26,10 +26,11 @@ class mongoDB():
         self.db['earthquake'].create_index("time")
         self.db['reservoir'].create_index("time")
         self.db['electricity'].create_index("time")
+        self.db['factory'].create_index("time")
 
 
     # If given data dictionary has some value that is marked as NULL, remove key:value from data
-    def filterAnomaly(self, data):
+    def filter_anomaly(self, data):
         t = {}
         for key, value in data.items():
             if value == -1.0 or value == "-":
@@ -39,8 +40,8 @@ class mongoDB():
         return t
 
     # Check the value type of input dictionary data based on input_schema,
-    # return false if unmatched data type is detected, and raise KeyError if key is missed
-    def __dataValid(self, data, functName):
+    # return false if unmatched data type is detected, or raise KeyError if key is missed
+    def __data_valid(self, data, functName):
         insert_schema_table = None
         for collection_schema in self.insert_schema:
             if(collection_schema['collection_name'] == self.mapper[functName]):
@@ -57,29 +58,29 @@ class mongoDB():
         return True
 
     # insert earthquake data into DB
-    def __processAndInsertEarthQuake(self, data):
+    def __process_an_insert_earth_quake(self, data):
         if type(data['time']) == str: 
             data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-        assert self.__dataValid(data, self.insertEarthquake.__name__) == True
-        data = self.filterAnomaly(data)
+        assert self.__data_valid(data, self.insertEarthquake.__name__) == True
+        data = self.filter_anomaly(data)
         magnitude = data.pop('magnitude')
         self.db['earthquake'].insert_one(data)
         factories = self.db['factory'].find()
 
         # Organize the structure of data to fit 'factory' collection, and then update the document
-        for fac in factories:
-            for data_fac in magnitude:
-                if(fac['factory'] == data_fac['factory']):
-                    data['magnitude']=data_fac['magnitude']
-                    self.db['factory'].update_one(
-                        {"factory":fac['factory']},
-                        {"$push":{"magnitude":data}}
-                    )
-                    break
+        for data_fac in magnitude:
+            factory_data = {key: value for key, value in data.items()}
+            factory_data['factory'] = data_fac['factory']
+            factory_data['magnitude'] = data_fac['magnitude']
+            del factory_data['_id']
+            print(factory_data)
+            self.db['factory'].insert_one(factory_data)
+
+
 
     # check if any elements in given data list is already exist in the DB. If so, remove redundant records from input data list.
     # Caution: This method is only work for insert_earth_quake 
-    def __filterRedundancyData(self, datas):
+    def __filter_redundancy_data(self, datas):
         info=[]
         for i in datas:
             d = {key: value for key, value in i.items() if key != "magnitude"}
@@ -94,18 +95,18 @@ class mongoDB():
     def insertEarthquake(self, data):
         # the input of data may contain many records (list type) or only contain one record (dict type)
         if(type(data) == list):
-            data = self.__filterRedundancyData(data)
+            data = self.__filter_redundancy_data(data)
             for d in data:
-                self.__processAndInsertEarthQuake(d)
+                self.__process_an_insert_earth_quake(d)
         else:
-            self.__processAndInsertEarthQuake(data)
+            self.__process_an_insert_earth_quake(data)
 
         return 0
 
     def insertReservoir(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-        assert self.__dataValid(data, self.insertReservoir.__name__) == True
-        data = self.filterAnomaly(data)
+        assert self.__data_valid(data, self.insertReservoir.__name__) == True
+        data = self.filter_anomaly(data)
         try:
             name = data.pop("name")
         except KeyError as e:
@@ -129,8 +130,8 @@ class mongoDB():
 
     def insertElectricity(self, data):
         data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-        assert self.__dataValid(data, self.insertElectricity.__name__) == True
-        data = self.filterAnomaly(data)
+        assert self.__data_valid(data, self.insertElectricity.__name__) == True
+        data = self.filter_anomaly(data)
         try:
             region = data.pop('region')
         except KeyError as e:
@@ -151,12 +152,12 @@ class mongoDB():
 
         return 0
 
+
     def retrieveEarthquake(self, quantity=1):
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = [x for x in ret]
-        print(ret)
         # If no matched data exist in the db
         if len(ret,) == 0:
             ret = []
@@ -164,6 +165,8 @@ class mongoDB():
         return ret
 
 
+# {'time': datetime.datetime(2023, 5, 12, 3, 40, 52), 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0,
+# 'latitude':20.7, 'factory': '南', 'magnitude': 0.0003714193582435097}
 
     def retrieveFactoryEarthquake(self, quantity=1, factory=None):
         if factory == None:
@@ -173,10 +176,9 @@ class mongoDB():
         if quantity>MAX_PRSERVE_RECORD:
             raise Exception("requested quantity exceed.")
         else:
-            ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
+            ret = self.db['factory'].find({"factory":factory},{"_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
             
-            ret = [x['magnitude'] for x in ret]
-
+            ret = [x for x in ret]
             # If no matched data exist in the db
             if len(ret) == 0:
                 ret = []
@@ -214,13 +216,10 @@ class mongoDB():
     # Delete all datas of assigned DB in MongoDB server, proceed with caution!
     def reset(self):
         collection = self.db["earthquake"]
-
         result = collection.delete_many({})
         collection = self.db["electricity"]
         result = collection.delete_many({})
         collection = self.db["reservoir"]
         result = collection.delete_many({})
         collection = self.db["factory"]
-        for fac in collection.find({}):
-            collection.update_one({"factory":fac['factory']},{"$set":{"magnitude":[]}})
-
+        result = collection.delete_many({})
