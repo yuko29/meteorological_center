@@ -108,6 +108,7 @@ class mongoDB():
                 }
             )
 
+        # Add a new record into assigned reservoir name 
         self.db['reservoir'].update_one(
             {"name":name},
             { "$push":{"data":data}}
@@ -144,6 +145,8 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
         ret = self.db['earthquake'].find({},{"_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = [x for x in ret]
+
+        # If no matched data exist in the db
         if len(ret,) == 0:
             ret = []
             ret.append({'time': None, 'M_L': -1.0, 'focal_dep': -1.0, 'longitude': -1.0, 'latitude': -1.0})
@@ -162,6 +165,8 @@ class mongoDB():
             ret = self.db['factory'].find({"factory":factory},{"magnitude":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
             
             ret = [x['magnitude'] for x in ret]
+
+            # If no matched data exist in the db
             if len(ret) == 0:
                 ret = []
                 ret.append({'time': None, 'M_L': -1, 'focal_dep': -1, 'longitude': -1, 'latitude': -1, 'magnitude': -1})
@@ -176,6 +181,7 @@ class mongoDB():
 
         ret = self.db['electricity'].find({"region":region},{"data":1, "_id":0}).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = [x['data'] for x in ret][0]
+        # If no matched data exist in the db
         if(len(ret) == 0):
             ret = []
             ret.append({'power_usage': -1.0, 'power_generate': -1.0, 'time': None})
@@ -188,6 +194,7 @@ class mongoDB():
             raise Exception("requested quantity exceed.")
         ret = self.db['reservoir'].find({"name":name},{"data":1, "_id":0}).sort("time", -1).limit(min(quantity, MAX_PRSERVE_RECORD))
         ret = [x['data'] for x in ret]
+        # If no matched data exist in the db
         if(len(ret) == 0):
             ret = []
             ret.append({'time':None, 'percentage': -1.0, 'water_supply': -1.0, 'name': name})
