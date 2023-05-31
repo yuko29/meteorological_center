@@ -13,13 +13,9 @@ from db_config import IP, PORT, MAX_PRSERVE_RECORD
 """
 
 class Database():
-    def __init__(self, IP: str, PORT: int, db_name: str, collection_list = None):
+    def __init__(self, IP: str, PORT: int, db_name: str):
         self.client = pymongo.MongoClient(f"mongodb://{IP}:{PORT}/")
-        self.__collection_list = [] # list
         self.db = self.client[db_name]   # init database
-        if collection_list != None:
-            for i in collection_list:
-                self.db["i"]={}
 
     def insert_data(self, collection_name: str, data: dict):
         self.db[collection_name].insert_one(data)

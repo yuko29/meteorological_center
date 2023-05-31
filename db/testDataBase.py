@@ -9,17 +9,17 @@ from unittest.mock import MagicMock
 
 class MongoDBTest(unittest.TestCase):
 
-    def setUp(self):
+    def set_up(self):
         self.instance = Database(IP = IP, PORT = PORT, db_name="my-mongodb")
         with open("./TDD1.json", "r") as f:
             self.test_cases = json.load(f)
 
-    def __tearDown(self, collection_name):
+    def __tear_down(self, collection_name):
         self.instance.db[collection_name].drop()
 
 
-    def test_insertData(self):
-        self.setUp()
+    def test_insert_data(self):
+        self.set_up()
         cases =[
             {
                 "collection":"a_collection",
@@ -35,7 +35,7 @@ class MongoDBTest(unittest.TestCase):
             }
         ]
         for case in cases:
-            self.__tearDown(case['collection'])
+            self.__tear_down(case['collection'])
             self.instance.retrieve_data = MagicMock(side_effect=self.instance.db[case["collection"]].find)
             self.instance.insert_data(case["collection"], case)
             retrieved_data = [x for x in self.instance.retrieve_data({}, {})][0]
@@ -43,7 +43,7 @@ class MongoDBTest(unittest.TestCase):
 
 
     def test_retrieveData(self):
-        self.setUp()
+        self.set_up()
         cases =[
             {
                 "collection":"a_collection",
@@ -59,14 +59,11 @@ class MongoDBTest(unittest.TestCase):
             }
         ]
         for case in cases:
-            self.__tearDown(case['collection'])
+            self.__tear_down(case['collection'])
             self.instance.insert_data(case["collection"], case)
             ret = [x for x in self.instance.retrieve_data(case["collection"], condition = {}, value = {})][0]
             self.assertEqual(ret, case)
 
-
-
-    #def retrieve_data(self, collection, condition = {}, value = {"_id":0}, sort=('_id',1), limit=1):
 
 if __name__ == "__main__":
     unittest.main()
