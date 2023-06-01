@@ -101,11 +101,11 @@ If you're sure you are right, delete \"_id\" in your input data."
         return [x for x in self.retrieve_data(
                 collection_name="earthquake", condition={}, sort=('time', -1), limit=quantity)]
     
-    def retrieve_reservoir_data_by_name(self, resovoir_name: str=None, quantity:int =1):
-        assert resovoir_name is not None, "resovoir name is not specified in given request"
+    def retrieve_reservoir_data_by_name(self, name: str=None, quantity:int =1):
+        assert name is not None, "resovoir name is not specified in given request"
         assert type(quantity) == int, "quantity must be integer"
         return [x for x in self.retrieve_data(
-                collection_name="reservoir", condition={"name": resovoir_name}, sort=('time', -1), limit=quantity)]
+                collection_name="reservoir", condition={"name": name}, sort=('time', -1), limit=quantity)]
     
     
     def retrieve_electricity_data_by_region(self, region: str=None, quantity:int =1):  # region = ["北", "中", "南"]

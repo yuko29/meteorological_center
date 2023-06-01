@@ -17,23 +17,24 @@ a = MongoDB()
 # a.exampleAPI2()
 
 
-# a.insertEarthquake(earthEqake_test)
-# a.insertEarthquake(earthEqake_test2)
-a.insert_earthquake_data(earthEqake_test_list)
-# a.insertElectricity(electricity_test)
-# a.insertElectricity(electricity_test2)
-# a.insertReservoir(reservoir_test)
-# a.insertReservoir(reservoir_test2)
 
-# print(f"RETRIEVING RESERVOIR...")
-# print(a.retrieveReservoir(50, "德基水庫"))
-# for i in a.retrieveReservoir(50, "2"):
-#     print(i)
+a.insert_earthquake_data(earthEqake_test)
+a.insert_earthquake_data(earthEqake_test2)
+#a.insert_earthquake_data(earthEqake_test_list)
+a.insert_electricity_data(electricity_test)
+a.insert_electricity_data(electricity_test2)
+a.insert_reservoir_data(reservoir_test)
+a.insert_reservoir_data(reservoir_test2)
 
-# print(f"\n\n\nRETRIEVING ELECTRICITY...\n\n")
+print(f"RETRIEVING RESERVOIR...")
+print(a.retrieve_reservoir_data_by_name(quantity= 50, name="德基水庫"))
+for i in a.retrieve_reservoir_data_by_name(quantity= 50,name="2"):
+    print(i)
 
-# for i in a.retrieveElectricity(52, "北"):
-#     print(i)
+print(f"\n\n\nRETRIEVING ELECTRICITY...\n\n")
+
+for i in a.retrieve_electricity_data_by_region(quantity= 50,region="北"):
+    print(i)
 
 print(f"\n\n\nRETRIEVING EARTHQUAKE...\n\n")
 for i in a.retrieve_earthquake_data(5):

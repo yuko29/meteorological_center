@@ -11,7 +11,7 @@ class MongoDBTest(unittest.TestCase):
 
     def set_up(self):
         self.instance = Database(ip = IP, port = PORT, db_name="my-mongodb")
-        with open("./TDD_DataBase.json", "r") as f:
+        with open("./testcase_DataBase.json", "r") as f:
             self.test_cases = json.load(f)
 
     def __tear_down(self, collection_name):
