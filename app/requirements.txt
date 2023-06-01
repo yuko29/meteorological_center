@@ -5,3 +5,7 @@ flask==1.1.2
 flask_pymongo==2.3.0
 jinja2==2.11.3
 requests
+pymongo
+strongtyping==2.2.3
+typing==3.7.4.3
+DateTime==5.1

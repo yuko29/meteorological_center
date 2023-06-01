@@ -1,5 +1,5 @@
 import unittest
-from DataBase import Database
+from Database import Database
 import pymongo
 import json
 import math
@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 class MongoDBTest(unittest.TestCase):
 
     def set_up(self):
-        self.instance = Database(IP = IP, PORT = PORT, db_name="my-mongodb")
-        with open("./TDD1.json", "r") as f:
+        self.instance = Database(ip = IP, port = PORT, db_name="my-mongodb")
+        with open("./testcase_DataBase.json", "r") as f:
             self.test_cases = json.load(f)
 
     def __tear_down(self, collection_name):
@@ -20,20 +20,7 @@ class MongoDBTest(unittest.TestCase):
 
     def test_insert_data(self):
         self.set_up()
-        cases =[
-            {
-                "collection":"a_collection",
-                "name":"Andy",
-                "sex":"Male",
-                "money":32
-            },
-            {
-                "collection":"a_collection",
-                "name":"Nina",
-                "sex":0,
-                "money":"32"
-            }
-        ]
+        cases = self.test_cases['Insert']
         for case in cases:
             self.__tear_down(case['collection'])
             self.instance.retrieve_data = MagicMock(side_effect=self.instance.db[case["collection"]].find)
@@ -44,20 +31,7 @@ class MongoDBTest(unittest.TestCase):
 
     def test_retrieveData(self):
         self.set_up()
-        cases =[
-            {
-                "collection":"a_collection",
-                "name":"Andy",
-                "sex":"Male",
-                "money":32
-            },
-            {
-                "collection":"a_collection",
-                "name":"Nina",
-                "sex":0,
-                "money":"32"
-            }
-        ]
+        cases = self.test_cases['Retrieve']
         for case in cases:
             self.__tear_down(case['collection'])
             self.instance.insert_data(case["collection"], case)
