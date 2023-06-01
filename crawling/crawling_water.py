@@ -36,7 +36,7 @@ for re in re_list:
 
 print(reservoir)
 print("---------------------------")
-data = a.retrieveReservoir(1, name="曾文水庫")
+data = a.retrieve_reservoir_data_by_name(quantity = 1, name="曾文水庫")
 print(data)
 
 #reservoir_test2 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "德基水庫"}

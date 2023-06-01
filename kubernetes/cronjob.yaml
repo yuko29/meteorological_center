@@ -3,16 +3,58 @@ kind: CronJob
 metadata:
   name: cronjob-water
 spec:
-  schedule: "0/1 * * * *"
+  schedule: "0/1 * * * *"      # every minute
   jobTemplate:
     spec:
       template:
         spec:
           containers:
           - name: cronjob-water
-            image: yuko29/crawling-water:v1
+            image: yuko29/crawling:v1
             args:
             - /bin/sh
             - -c
             - python crawling_water.py
+          restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-elec
+spec:
+  schedule: "0/1 * * * *"     # every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cronjob-elec
+            image: yuko29/crawling:v1
+            args:
+            - /bin/sh
+            - -c
+            - python crawling_elec.py
+          restartPolicy: OnFailure
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cronjob-earthquake
+spec:
+  schedule: "0/1 * * * *"     # every minute
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: cronjob-earthquake
+            image: yuko29/crawling:v1
+            args:
+            - /bin/sh
+            - -c
+            - python crawling_earthquake.py
           restartPolicy: OnFailure

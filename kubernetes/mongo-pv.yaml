@@ -10,7 +10,8 @@ spec:
     - ReadWriteOnce
   hostPath:
     path: /data
-  persistentVolumeReclaimPolicy: Retain  # Recycle
+  persistentVolumeReclaimPolicy: Retain   # Recycle: Delete the volume data after the pv is deleted 
+                                          # Retain: Retain the volume data after the pv is deleted 
 
 ---
 

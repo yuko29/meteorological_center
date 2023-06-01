@@ -6,10 +6,15 @@ run:
 	kubectl apply -f ./kubernetes/mongo.yaml
 	kubectl apply -f ./kubernetes/mongo-svc.yaml
 
+add-cronjob:
+	kubectl apply -f ./kubernetes/cronjob.yaml
+
+delete-cronjob:
+	kubectl delete -f ./kubernetes/cronjob.yaml
+
 build:
 	docker build -t meteorological-center-web:latest .
-	docker build -f crawling/Dockerfile.water -t meteorological-center-crawling-water:latest crawling
-	docker build -f crawling/Dockerfile.elec -t meteorological-center-crawling-elec:latest crawling
+	docker build -f Dockerfile.crawling -t yuko29/crawling:v1 . 
 
 clean:
 	kubectl delete -f ./kubernetes/flaskapp.yaml
