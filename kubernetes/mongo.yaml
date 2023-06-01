@@ -14,6 +14,7 @@ spec:
       containers:
         - name: mongo
           image: mongo
+          args: ["--dbpath","/data/db"]
           ports:
             - containerPort: 27017
           volumeMounts:
