@@ -9,9 +9,9 @@ from strongtyping.strong_typing import match_class_typing
     you are recommaned to inherit this class to implement your custom database.
 """
 
-
+@match_class_typing
 class Database():
-    def __init__(self, ip: str, port: str, db_name: str):
+    def __init__(self, ip: str, port: int, db_name: str):
         self.client = pymongo.MongoClient(f"mongodb://{ip}:{port}/")
         self.db = self.client[db_name]   # init database
 

@@ -1,13 +1,13 @@
 import pymongo
 import bson
-from Database import Database
+from dbAPI.Database import Database
 from strongtyping.strong_typing import match_class_typing
 from typing import Optional, List, Dict, Union, Any, Tuple
 from datetime import datetime
 import pprint
-from db_config import IP, PORT, MAX_PRSERVE_RECORD, COLLECTION_LIST
+from dbAPI.db_config import IP, PORT, MAX_PRSERVE_RECORD, COLLECTION_LIST
 
-
+@match_class_typing
 class MongoDB(Database):
     
     def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = "my_mongoDB", collection_list:  Optional[list] = None):

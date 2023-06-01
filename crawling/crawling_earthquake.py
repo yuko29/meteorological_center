@@ -2,7 +2,7 @@ import requests
 import re
 import math
 from math import sin, cos, radians
-from mongoDB import mongoDB
+from dbAPI.MongoDB import MongoDB
 
 
 def crawl_data_ten():
@@ -128,10 +128,10 @@ def get_new_update():
 earthQuake_list = crawl_data_ten()
 for earthQuake in earthQuake_list:
     earthQuake = calculate_magnitude(earthQuake)
-a = mongoDB()
-#a.insertEarthquake(earthEqake_list)
-#a.insertEarthquake(earthQuake_list[0])
-a.insertEarthquake(earthQuake_list)
+a = MongoDB()
+#a.insert_earthquake_data(earthEqake_list)
+#a.insert_earthquake_data(earthQuake_list[0])
+a.insert_earthquake_data(earthQuake_list)
 
 #{'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
 

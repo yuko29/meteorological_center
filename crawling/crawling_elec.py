@@ -1,6 +1,6 @@
 import requests
 import re
-from mongoDB import mongoDB
+from dbAPI.MongoDB import MongoDB
 
 elec = requests.get("https://www.taiwanstat.com/powers/latest/") #將此頁面的HTML GET下來
 #print(elec.text) #印出HTML
@@ -15,15 +15,15 @@ northUsage = float(elec.json()["regionData"]["northUsage"])   #北部即時用�
 southUsage = float(elec.json()["regionData"]["southUsage"])   #南部即時用電量
 centerUsage = float(elec.json()["regionData"]["centerUsage"]) #中部即時用電量
 
-a = mongoDB()
+a = MongoDB()
 
 Electricity_north = {'region':"北", 'power_usage':northUsage, 'power_generate': northSupply, 'time': update_time}
 Electricity_center = {'region':"中", 'power_usage':centerUsage, 'power_generate': centerSupply, 'time': update_time}
 Electricity_south = {'region':"南", 'power_usage':southUsage, 'power_generate': southSupply, 'time': update_time}
 
-a.insertElectricity(Electricity_north)
-a.insertElectricity(Electricity_center)
-a.insertElectricity(Electricity_south)
+a.insert_electricity_data(Electricity_north)
+a.insert_electricity_data(Electricity_center)
+a.insert_electricity_data(Electricity_south)
 
 print(Electricity_north)
 print(Electricity_center)
