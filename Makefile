@@ -2,9 +2,9 @@
 
 run:
 	kubectl apply -f ./kubernetes/flaskapp.yaml
-	kubectl apply -f ./kubernetes/mongo-svc.yaml
-	kubectl apply -f ./kubernetes/mongo.yaml
 	kubectl apply -f ./kubernetes/mongo-pv.yaml
+	kubectl apply -f ./kubernetes/mongo.yaml
+	kubectl apply -f ./kubernetes/mongo-svc.yaml
 
 build:
 	docker build -t meteorological-center-web:latest .

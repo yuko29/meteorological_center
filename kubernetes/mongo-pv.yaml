@@ -3,13 +3,14 @@ kind: PersistentVolume
 metadata:
   name: mongo-pv
 spec:
+  storageClassName: "local-storage"
   capacity:
     storage: 256Mi
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: /home/yuko/meteorological_center/db/data
-    type: "DirectoryOrCreate"
+    path: /data
+  persistentVolumeReclaimPolicy: Retain  # Recycle
 
 ---
 
@@ -18,6 +19,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: mongo-pvc
 spec:
+  storageClassName: "local-storage"
   accessModes:
     - ReadWriteOnce
   resources:
