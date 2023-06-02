@@ -6,7 +6,12 @@ from math import sin, cos, radians
 
 
 def get_history(url: str):
-    earthquake = requests.get(url) # get HTML
+    
+    try:
+        earthquake = requests.get(url) 
+    except requests.exceptions.RequestException:
+        exit()
+    
     html_content = earthquake.content.decode('utf-8')
 
     pattern = re.compile(r'var\s+locations\s*=\s*([^;]+);') # format of "var location"
@@ -88,7 +93,7 @@ def getDistance(x: float, y: float):
     return math.sqrt(x**2 + y**2)
 
 
-def calculate_magnitude(data: dict, GG_factory: list):
+def calculate_magnitude(data: dict, GG_factory: list[dict]):
     fac_magnitude = []
     for fac in GG_factory:
         long_km = latitude_difference_to_km(fac['longitude'], data['longitude'])
@@ -122,7 +127,6 @@ def main():
     {'factory': '中', 'longitude': 120.618, 'latitude': 24.2115, 'Si': 1.063, 'Padj': 1.0, 'magnitude': []},
     {'factory': '南', 'longitude': 120.272, 'latitude': 23.1135, 'Si': 1.968, 'Padj': 1.0, 'magnitude': []}
     ]
-    
     
     earthQuake_list = crawl_ten_data(url)
 
