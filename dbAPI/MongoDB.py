@@ -12,13 +12,13 @@ class MongoDB(Database):
     
     def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = "my_mongoDB", collection_list:  Optional[list] = None):
         if ip == None or port == None:
-            print("None ip or port specified. Loading db_config")
+            print("[MongoDB] None ip or port specified. Loading db_config")
             ip = IP
             port = PORT
         super().__init__(ip=ip, port=port, db_name=db_name)
         self.collection_list = collection_list
         if self.collection_list == None:
-            print("None collection_list specified. Loading db_config")
+            print("[MongoDB] None collection_list specified. Loading db_config")
             self.collection_list = COLLECTION_LIST
 
         for collection in self.collection_list:
@@ -28,7 +28,7 @@ class MongoDB(Database):
     
     def __filter_anomaly(self, data: dict):  # Filter out the data bad values, rules are defined in self.anomaly_values
         for key, value in list(data.items()):
-            assert type(value) != bson.objectid.ObjectId, "insertion of two same data instances detected!\n \
+            assert type(value) != bson.objectid.ObjectId, "[MongoDB] Insertion of two same data instances detected!\n \
 If you're sure you are right, delete \"_id\" in your input data."
             if(self.anomaly_values[type(value)] == value):
                 data.pop(key)
@@ -50,7 +50,7 @@ If you're sure you are right, delete \"_id\" in your input data."
 
     @staticmethod
     def __transfer_time_type(data):
-        assert not (data.get("time") is None), "time is not provided in given data"
+        assert not (data.get("time") is None), "[MongoDB] Time is not provided in given data"
         if(type(data['time'])==str):
             data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         return data
@@ -78,39 +78,39 @@ If you're sure you are right, delete \"_id\" in your input data."
     
     def insert_electricity_data(self, data: dict):
         data = self.__transfer_time_type(data)
-        assert not (data.get("region") is None), "Region is not provided in electricity data"
+        assert not (data.get("region") is None), "[MongoDB] Region is not provided in electricity data"
         self.__filter_anomaly(data)
         self.insert_data("electricity", data)
         
     
     def insert_reservoir_data(self, data: dict):
         data = self.__transfer_time_type(data)
-        assert not (data.get("name") is None), "Reservoir name is not provided in reservoir data"
+        assert not (data.get("name") is None), "[MongoDB] Reservoir name is not provided in reservoir data"
         self.__filter_anomaly(data)
         self.insert_data("reservoir", data)
         
     
     def retrieve_earthquake_data_by_factory(self, factory: str=None, quantity:int =1):  # factory_location = ["竹", "中", "南"]
-        assert factory is not None, "fatory is not specified in given request"
-        assert type(quantity) == int, "quantity must be integer"
+        assert factory is not None, "[MongoDB] Fatory is not specified in given request"
+        assert type(quantity) == int, "[MongoDB] Quantity must be integer"
         return [x for x in self.retrieve_data(
                 collection_name="factory", condition={"factory": factory}, sort=('time', -1), limit=quantity)]
 
     def retrieve_earthquake_data(self, quantity:int =1):
-        assert type(quantity) == int, "quantity must be integer"
+        assert type(quantity) == int, "[MongoDB] Quantity must be integer"
         return [x for x in self.retrieve_data(
                 collection_name="earthquake", condition={}, sort=('time', -1), limit=quantity)]
     
     def retrieve_reservoir_data_by_name(self, name: str=None, quantity:int =1):
-        assert name is not None, "resovoir name is not specified in given request"
-        assert type(quantity) == int, "quantity must be integer"
+        assert name is not None, "[MongoDB] Resovoir name is not specified in given request"
+        assert type(quantity) == int, "[MongoDB] Quantity must be integer"
         return [x for x in self.retrieve_data(
                 collection_name="reservoir", condition={"name": name}, sort=('time', -1), limit=quantity)]
     
     
     def retrieve_electricity_data_by_region(self, region: str=None, quantity:int =1):  # region = ["北", "中", "南"]
-        assert type(quantity) == int, "quantity must be integer"
-        assert region is not None, "region is not specified in given request"
+        assert type(quantity) == int, "[MongoDB] Quantity must be integer"
+        assert region is not None, "[MongoDB] Region is not specified in given request"
         return [x for x in self.retrieve_data(
                 collection_name="electricity", condition={"region": region}, sort=('time', 1), limit=quantity)]
     
