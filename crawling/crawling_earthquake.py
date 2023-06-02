@@ -2,7 +2,7 @@ import requests
 import re
 import math
 from math import sin, cos, radians
-#from dbAPI.MongoDB import MongoDB
+from dbAPI.MongoDB import MongoDB
 
 
 def get_history(url: str):
@@ -34,8 +34,7 @@ def crawl_data(url: str):
     history = get_history(url)
     earthQuake = {'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': float(history[0][7]), 'latitude': float(history[0][8])}
     return earthQuake
-    #earthEqake_test = {'time':"2023-5-12 03:40:52", 'M_L':3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7}
-
+    
 def longitude_difference_to_km(longitude1: float, longitude2: float):
     """
     Convert the difference between two longitudes into kilometers using the haversine formula.
@@ -134,8 +133,8 @@ def main():
         earthQuake = calculate_magnitude(earthQuake, GG_factory)
     #print(earthQuake_list)
     
-    #a = MongoDB()
-    #a.insert_earthquake_data(earthQuake_list)
+    a = MongoDB()
+    a.insert_earthquake_data(earthQuake_list)
 
 
 if __name__ == "__main__":

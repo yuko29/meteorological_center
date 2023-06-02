@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import requests
-#from dbAPI.MongoDB import MongoDB
+from dbAPI.MongoDB import MongoDB
 
 def get_water(url: str):
     try:
@@ -37,10 +37,10 @@ def handle_data(soup, re_list: list[str]):
     return reservoir
 
 def insert_to_db(reservoir: dict, re_list: list[str]):
-    #a = MongoDB()
+    a = MongoDB()
     for re in re_list:
-        #a.insert_reservoir_data({'time':reservoir[re]['time'], 'percentage': reservoir[re]['percentage'], 'water_supply': reservoir[re]['water_supply'], 'name': re})
-        print(re, reservoir[re])
+        a.insert_reservoir_data({'time':reservoir[re]['time'], 'percentage': reservoir[re]['percentage'], 'water_supply': reservoir[re]['water_supply'], 'name': re})
+        #print(re, reservoir[re])
 
 def main():
     url = "https://fhy.wra.gov.tw/ReservoirPage_2011/Statistics.aspx"

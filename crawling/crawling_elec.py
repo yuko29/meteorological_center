@@ -1,6 +1,6 @@
 import requests
 import re
-#from dbAPI.MongoDB import MongoDB
+from dbAPI.MongoDB import MongoDB
 
 def get_elec(url: str):
     try:
@@ -34,10 +34,10 @@ def insert_to_db(update_time:str, Supply: list[float], Usage: list[float]):
     Electricity_center = {'region':"中", 'power_usage': Usage[1], 'power_generate': Supply[1], 'time': update_time}
     Electricity_south = {'region':"南", 'power_usage': Usage[2], 'power_generate': Supply[2], 'time': update_time}
     
-    #a = MongoDB()
-    #a.insert_electricity_data(Electricity_north)
-    #a.insert_electricity_data(Electricity_center)
-    #a.insert_electricity_data(Electricity_south)
+    a = MongoDB()
+    a.insert_electricity_data(Electricity_north)
+    a.insert_electricity_data(Electricity_center)
+    a.insert_electricity_data(Electricity_south)
     
     #print(Electricity_north)
     #print(Electricity_center)
