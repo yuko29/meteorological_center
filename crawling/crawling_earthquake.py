@@ -92,7 +92,7 @@ def getDistance(x: float, y: float):
     return math.sqrt(x**2 + y**2)
 
 
-def calculate_magnitude(data: dict, GG_factory: list[dict]):
+def calculate_magnitude(data: dict, GG_factory: list):
     fac_magnitude = []
     for fac in GG_factory:
         long_km = latitude_difference_to_km(fac['longitude'], data['longitude'])
@@ -131,11 +131,15 @@ def main():
 
     for earthQuake in earthQuake_list:
         earthQuake = calculate_magnitude(earthQuake, GG_factory)
-    #print(earthQuake_list)
     
-    a = MongoDB()
-    a.insert_earthquake_data(earthQuake_list)
-
-
+    print(earthQuake_list)
+    a = MongoDB(ip="172.27.0.1", port=27017)
+    for earthQuake in earthQuake_list:
+        a.insert_earthquake_data(earthQuake)
+    #a.insert_earthquake_data(earthQuake_list)
+    print(f"\n\n\nRETRIEVING EARTHQUAKE...\n\n")
+    for i in a.retrieve_earthquake_data(10):
+        print(i)
+    a.reset()
 if __name__ == "__main__":
     main()
