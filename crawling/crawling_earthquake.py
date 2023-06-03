@@ -129,7 +129,7 @@ def main():
     earthQuake = calculate_magnitude(earthQuake, GG_factory)
     
     print(earthQuake)
-    a = MongoDB(ip="172.27.0.1", port=27017)
+    a = MongoDB()
     a.insert_earthquake_data(earthQuake)
     
     print(f"\n\n\nRETRIEVING EARTHQUAKE...\n\n")
