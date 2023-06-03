@@ -20,14 +20,11 @@ def get_history(url: str):
     
     return history
 
-def crawl_ten_data(url: str):
+def crawl_data(url: str):
     history = get_history(url)
-    history_list = []
-    for i in range(10):
-        history_list.append({'time':history[i][2], 'M_L':history[i][3], 'focal_dep': history[i][4], 'longitude': float(history[i][7]), 'latitude': float(history[i][8])})
-        #history_q.put({'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': float(history[0][7]), 'latitude': float(history[0][8])})
+    history={'time':history[0][2], 'M_L':history[0][3], 'focal_dep': history[0][4], 'longitude': float(history[0][7]), 'latitude': float(history[0][8])}
 
-    return history_list
+    return history
 
 
 def crawl_data(url: str):
@@ -127,19 +124,17 @@ def main():
     {'factory': '南', 'longitude': 120.272, 'latitude': 23.1135, 'Si': 1.968, 'Padj': 1.0, 'magnitude': []}
     ]
     
-    earthQuake_list = crawl_ten_data(url)
+    earthQuake = crawl_data(url)
 
-    for earthQuake in earthQuake_list:
-        earthQuake = calculate_magnitude(earthQuake, GG_factory)
+    earthQuake = calculate_magnitude(earthQuake, GG_factory)
     
-    print(earthQuake_list)
+    print(earthQuake)
     a = MongoDB(ip="172.27.0.1", port=27017)
-    for earthQuake in earthQuake_list:
-        a.insert_earthquake_data(earthQuake)
-    #a.insert_earthquake_data(earthQuake_list)
+    a.insert_earthquake_data(earthQuake)
+    
     print(f"\n\n\nRETRIEVING EARTHQUAKE...\n\n")
     for i in a.retrieve_earthquake_data(10):
         print(i)
-    a.reset()
+    
 if __name__ == "__main__":
     main()
