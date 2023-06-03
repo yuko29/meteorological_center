@@ -39,7 +39,7 @@ def handle_data(soup, re_list: list[str]):
 def insert_to_db(reservoir: dict, re_list: list[str]):
     a = MongoDB()
     for re in re_list:
-        a.insert_reservoir_data({'time':reservoir[re]['time'], 'percentage': reservoir[re]['percentage'], 'water_supply': reservoir[re]['water_supply'], 'name': re})
+        a.insert_reservoir_data({'time':reservoir[re]['time'], 'percentage': reservoir[re]['percentage'], 'water_supply': reservoir[re]['volume'], 'name': re})
         #print(re, reservoir[re])
 
 def main():
