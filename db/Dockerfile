@@ -1,4 +1,4 @@
-FROM mongo:latest AS DB
+FROM mongo:7.0-rc AS DB
 
 COPY db-dump /db-dump
 COPY mongo.sh /home/mongo.sh
