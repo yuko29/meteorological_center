@@ -5,16 +5,18 @@ from strongtyping.strong_typing import match_class_typing
 from typing import Optional, List, Dict, Union, Any, Tuple
 from datetime import datetime
 import pprint
-from dbAPI.db_config import IP, PORT, MAX_PRSERVE_RECORD, COLLECTION_LIST
+from dbAPI.db_config import IP, PORT, DB_NAME, MAX_PRSERVE_RECORD, COLLECTION_LIST
 
 @match_class_typing
 class MongoDB(Database):
     
-    def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = "my_mongoDB", collection_list:  Optional[list] = None):
-        if ip == None or port == None:
-            print("[MongoDB] None ip or port specified. Loading db_config")
+    def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = None, collection_list:  Optional[list] = None):
+        if ip == None or port == None or db_name == None or collection_list == None:
+            print("[MongoDB] At least one input is invalid or not specified. Loading db_config")
             ip = IP
             port = PORT
+            db_name = DB_NAME
+            collection_list = COLLECTION_LIST
         super().__init__(ip=ip, port=port, db_name=db_name)
         self.collection_list = collection_list
         if self.collection_list == None:
@@ -28,29 +30,15 @@ class MongoDB(Database):
     
     def __filter_anomaly(self, data: dict):  # Filter out the data bad values, rules are defined in self.anomaly_values
         for key, value in list(data.items()):
-            assert type(value) != bson.objectid.ObjectId, "[MongoDB] Insertion of two same data instances detected!\n \
-If you're sure you are right, delete \"_id\" in your input data."
+            assert type(value) != bson.objectid.ObjectId, "[MongoDB] This data had been inserted in previous API call or exist invalid coulmn(['_id'])!\n \
+If you want to insert the data again, delete '_id' key in your input data."
             if(self.anomaly_values[type(value)] == value):
                 data.pop(key)
 
 
-    # This function checks and filte all 
-    def __delete_earthquake_duplicate(self, data: List[Dict], collection: str):
-        latest_data = [x for x in self.retrieve_data(collection_name="earthquake", condition={}, sort=("time", -1), limit=len(data))]
-        filtered_data = []
-        for input, db in zip(data, latest_data):
-            magnitude = input.pop("magnitude")  # organize the structure of input data so their format is same
-            if input != db:
-                input['magnitude'] = magnitude  # restore the format of input data
-                filtered_data.append(input)
-                print(input)
-                print(db)
-    
-        return filtered_data
-
     @staticmethod
     def __transfer_time_type(data):
-        assert not (data.get("time") is None), "[MongoDB] Time is not provided in given data"
+        assert not (data.get("time") is None), "[MongoDB] Time was not provided in given data"
         if(type(data['time'])==str):
             data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         return data
@@ -65,33 +53,29 @@ If you're sure you are right, delete \"_id\" in your input data."
             single_data['magnitude'] = factory['magnitude']
             self.insert_data("factory", single_data)
 
-    def insert_earthquake_data(self, data: Union[Dict, List[Dict]]):
-        if(type(data) == list):    # input is a list of earthquake data 
-            data = self.__delete_earthquake_duplicate(data, "earthquake")
-            for x in data:
-                x = self.__transfer_time_type(x)
-                self.__insert_into_factory_and_earthqake(x)
-        else:                      # input is a single earthquake data
-            data = self.__transfer_time_type(data)
-            self.__insert_into_factory_and_earthqake(data)
+
+    def insert_earthquake_data(self, data: dict):
+        assert (data.get('magnitude') is not None), "[MongoDB] Magnitude for any factory was not provided in given data"
+        data = self.__transfer_time_type(data)
+        self.__insert_into_factory_and_earthqake(data)
     
     
     def insert_electricity_data(self, data: dict):
         data = self.__transfer_time_type(data)
-        assert not (data.get("region") is None), "[MongoDB] Region is not provided in electricity data"
+        assert not (data.get("region") is None), "[MongoDB] Region was not provided in electricity data"
         self.__filter_anomaly(data)
         self.insert_data("electricity", data)
         
     
     def insert_reservoir_data(self, data: dict):
         data = self.__transfer_time_type(data)
-        assert not (data.get("name") is None), "[MongoDB] Reservoir name is not provided in reservoir data"
+        assert not (data.get("name") is None), "[MongoDB] Reservoir name was not provided in reservoir data"
         self.__filter_anomaly(data)
         self.insert_data("reservoir", data)
         
     
     def retrieve_earthquake_data_by_factory(self, factory: str=None, quantity:int =1):  # factory_location = ["竹", "中", "南"]
-        assert factory is not None, "[MongoDB] Fatory is not specified in given request"
+        assert factory is not None, "[MongoDB] Fatory was not specified in given request"
         assert type(quantity) == int, "[MongoDB] Quantity must be integer"
         return [x for x in self.retrieve_data(
                 collection_name="factory", condition={"factory": factory}, sort=('time', -1), limit=quantity)]
@@ -102,7 +86,7 @@ If you're sure you are right, delete \"_id\" in your input data."
                 collection_name="earthquake", condition={}, sort=('time', -1), limit=quantity)]
     
     def retrieve_reservoir_data_by_name(self, name: str=None, quantity:int =1):
-        assert name is not None, "[MongoDB] Resovoir name is not specified in given request"
+        assert name is not None, "[MongoDB] Resovoir name was not specified in given request"
         assert type(quantity) == int, "[MongoDB] Quantity must be integer"
         return [x for x in self.retrieve_data(
                 collection_name="reservoir", condition={"name": name}, sort=('time', -1), limit=quantity)]
@@ -110,7 +94,7 @@ If you're sure you are right, delete \"_id\" in your input data."
     
     def retrieve_electricity_data_by_region(self, region: str=None, quantity:int =1):  # region = ["北", "中", "南"]
         assert type(quantity) == int, "[MongoDB] Quantity must be integer"
-        assert region is not None, "[MongoDB] Region is not specified in given request"
+        assert region is not None, "[MongoDB] Region was not specified in given request"
         return [x for x in self.retrieve_data(
                 collection_name="electricity", condition={"region": region}, sort=('time', 1), limit=quantity)]
     
