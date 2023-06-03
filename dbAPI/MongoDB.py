@@ -5,16 +5,18 @@ from strongtyping.strong_typing import match_class_typing
 from typing import Optional, List, Dict, Union, Any, Tuple
 from datetime import datetime
 import pprint
-from dbAPI.db_config import IP, PORT, MAX_PRSERVE_RECORD, COLLECTION_LIST
+from dbAPI.db_config import IP, PORT, DB_NAME, MAX_PRSERVE_RECORD, COLLECTION_LIST
 
 @match_class_typing
 class MongoDB(Database):
     
-    def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = "my_mongoDB", collection_list:  Optional[list] = None):
-        if ip == None or port == None:
-            print("[MongoDB] None ip or port specified. Loading db_config")
+    def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = None, collection_list:  Optional[list] = None):
+        if ip == None or port == None or db_name == None or collection_list == None:
+            print("[MongoDB] At least one input is invalid or not specified. Loading db_config")
             ip = IP
             port = PORT
+            db_name = DB_NAME
+            collection_list = COLLECTION_LIST
         super().__init__(ip=ip, port=port, db_name=db_name)
         self.collection_list = collection_list
         if self.collection_list == None:
@@ -28,8 +30,8 @@ class MongoDB(Database):
     
     def __filter_anomaly(self, data: dict):  # Filter out the data bad values, rules are defined in self.anomaly_values
         for key, value in list(data.items()):
-            assert type(value) != bson.objectid.ObjectId, "[MongoDB] Insertion of two same data instances detected!\n \
-If you're sure you are doing right, delete \"_id\" key in your input data."
+            assert type(value) != bson.objectid.ObjectId, "[MongoDB] This data had been inserted in previous API call or exist invalid coulmn(['_id'])!\n \
+If you want to insert the data again, delete '_id' key in your input data."
             if(self.anomaly_values[type(value)] == value):
                 data.pop(key)
 
