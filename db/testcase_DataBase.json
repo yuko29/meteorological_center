@@ -1,0 +1,28 @@
+{
+    "Insert":[
+    {
+        "collection":"a collection",
+        "name":"Andy",
+        "sex":"Male",
+        "money":32
+    },
+    {
+        "collection":"a collection",
+        "name":"Nina",
+        "sex":0,
+        "money":"32"
+    }],
+    "Retrieve":[
+        {
+            "collection":"a collection",
+            "name":"Andy",
+            "sex":"Male",
+            "money":32
+        },
+        {
+            "collection":"a collection",
+            "name":"Nina",
+            "sex":0,
+            "money":"32"
+        }]
+}

@@ -1,0 +1,7 @@
+pymongo==4.3.3
+strongtyping==2.2.3
+strong-typing==0.3.1
+typing==3.7.4.3
+DateTime==5.1
+types-PySide2==5.15.2.1.5
+typing_extensions==4.6.1
