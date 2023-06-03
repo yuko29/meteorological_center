@@ -39,12 +39,14 @@ If you want to insert the data again, delete '_id' key in your input data."
     @staticmethod
     def __transfer_time_type(data):
         assert not (data.get("time") is None), "[MongoDB] Time was not provided in given data"
-        if(type(data['time'])==str):
+        if(data['time'] == '-'):
+            data['time'] = datetime.now()
+        else:
             data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
         return data
 
     def __insert_into_factory_and_earthqake(self, single_data: Dict):
-        self.__filter_anomaly(single_data)
+        # self.__filter_anomaly(single_data)
         factory_data = single_data.pop('magnitude')
         self.insert_data("earthquake", single_data)
         for factory in factory_data:
@@ -63,14 +65,14 @@ If you want to insert the data again, delete '_id' key in your input data."
     def insert_electricity_data(self, data: dict):
         data = self.__transfer_time_type(data)
         assert not (data.get("region") is None), "[MongoDB] Region was not provided in electricity data"
-        self.__filter_anomaly(data)
+        # self.__filter_anomaly(data)
         self.insert_data("electricity", data)
         
     
     def insert_reservoir_data(self, data: dict):
         data = self.__transfer_time_type(data)
         assert not (data.get("name") is None), "[MongoDB] Reservoir name was not provided in reservoir data"
-        self.__filter_anomaly(data)
+        # self.__filter_anomaly(data)
         self.insert_data("reservoir", data)
         
     
