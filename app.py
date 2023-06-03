@@ -60,19 +60,46 @@ def hsinchu():
     
     print("click hsinchu !")
     
+    # earthquuake
+    earthquake_data = db.retrieveEarthquake(1)[0]
+    hsinchu_data["Earthquake_time"] = earthquake_data["time"]
+    hsinchu_data["Earthquake_magnitude"] = earthquake_data["M_L"]
+    
+    # electricity
+    electricity_data = db.retrieveElectricity(1, '北')[0]
+    hsinchu_data["Electricity_value"] = electricity_data["power_usage"]
+    hsinchu_data["Electricity_maximum"] = electricity_data["power_generate"]
+    
+    # reservoir
+    reservoir_data = db.retrieveReservoir(1, "石門水庫")[0]
+    hsinchu_data["Reservoir_percentage_1"] = reservoir_data["percentage"]
+    reservoir_data = db.retrieveReservoir(1, "寶山第二水庫")[0]
+    hsinchu_data["Reservoir_percentage_2"] = reservoir_data["percentage"]
+    reservoir_data = db.retrieveReservoir(1, "永和山水庫")[0]
+    hsinchu_data["Reservoir_percentage_3"] = reservoir_data["percentage"]
+    
     return jsonify({'data': hsinchu_data})
 
 @app.route('/taichung', methods=['GET'])
 def taichung():
 
     print("click taichung !")
-
-    earthquake_data = db.retrieveEarthquake(1)
-    for data in earthquake_data:
-        print(data)
-    print(data['M_L'])
-    taichung_data['Earthquake_magnitude'] = data['M_L']
     
+    # earthquuake
+    earthquake_data = db.retrieveEarthquake(1)[0]
+    taichung_data["Earthquake_time"] = earthquake_data["time"]
+    taichung_data["Earthquake_magnitude"] = earthquake_data["M_L"]
+    
+    # electricity
+    electricity_data = db.retrieveElectricity(1, '中')[0]
+    taichung_data["Electricity_value"] = electricity_data["power_usage"]
+    taichung_data["Electricity_maximum"] = electricity_data["power_generate"]
+    
+    # reservoir
+    reservoir_data = db.retrieveReservoir(1, "鯉魚潭水庫")[0]
+    taichung_data["Reservoir_percentage_1"] = reservoir_data["percentage"]
+    reservoir_data = db.retrieveReservoir(1, "德基水庫")[0]
+    taichung_data["Reservoir_percentage_2"] = reservoir_data["percentage"]
 
     return jsonify({'data': taichung_data})
 
@@ -80,6 +107,24 @@ def taichung():
 def tainan():
 
     print("click tainan !")
+
+    # earthquuake
+    earthquake_data = db.retrieveEarthquake(1)[0]
+    tainan_data["Earthquake_time"] = earthquake_data["time"]
+    tainan_data["Earthquake_magnitude"] = earthquake_data["M_L"]
+    
+    # electricity
+    electricity_data = db.retrieveElectricity(1, '北')[0]
+    tainan_data["Electricity_value"] = electricity_data["power_usage"]
+    tainan_data["Electricity_maximum"] = electricity_data["power_generate"]
+    
+    # reservoir
+    reservoir_data = db.retrieveReservoir(1, "南化水庫")[0]
+    tainan_data["Reservoir_percentage_1"] = reservoir_data["percentage"]
+    reservoir_data = db.retrieveReservoir(1, "曾文水庫")[0]
+    tainan_data["Reservoir_percentage_2"] = reservoir_data["percentage"]
+    reservoir_data = db.retrieveReservoir(1, "烏山頭水庫")[0]
+    tainan_data["Reservoir_percentage_3"] = reservoir_data["percentage"]
 
     return jsonify({'data': tainan_data})
 
@@ -91,17 +136,30 @@ db = mongoDB()
 earthEqake_test = {'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
 earthEqake_test2 = {'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
 electricity_test = {'region':"北", 'power_usage':512.3, 'power_generate': 482.1, 'time': "2023-5-12 03:40:52"}
+electricity_test1 = {'region':"中", 'power_usage':512.3, 'power_generate': 482.1, 'time': "2023-5-12 03:40:52"}
 electricity_test2 = {'region':"南", 'power_usage':510.3, 'power_generate': 472.1, 'time': "2023-5-12 03:40:52"}
-reservoir_test = {'time':"2023-5-12 03:40:52", 'percentage': 427.6, 'water_supply': 321.2, 'name': "-"}
+reservoir_test1 = {'time':"2023-5-12 03:40:52", 'percentage': 427.6, 'water_supply': 321.2, 'name': "鯉魚潭水庫"}
 reservoir_test2 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "德基水庫"}
+reservoir_test3 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "石門水庫"}
+reservoir_test4 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "寶山第二水庫"}
+reservoir_test5 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "永和山水庫"}
+reservoir_test6 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "南化水庫"}
+reservoir_test7 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "曾文水庫"}
+reservoir_test8 = {'time':"2023-5-12 03:40:52", 'percentage': 42.6, 'water_supply': 321.2, 'name': "烏山頭水庫"}
 
 db.insertEarthquake(earthEqake_test)
 db.insertEarthquake(earthEqake_test2)
 db.insertElectricity(electricity_test)
+db.insertElectricity(electricity_test1)
 db.insertElectricity(electricity_test2)
-db.insertReservoir(reservoir_test)
+db.insertReservoir(reservoir_test1)
 db.insertReservoir(reservoir_test2)
-
+db.insertReservoir(reservoir_test3)
+db.insertReservoir(reservoir_test4)
+db.insertReservoir(reservoir_test5)
+db.insertReservoir(reservoir_test6)
+db.insertReservoir(reservoir_test7)
+db.insertReservoir(reservoir_test8)
 
 
 if __name__ == '__main__':
