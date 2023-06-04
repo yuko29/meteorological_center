@@ -137,7 +137,7 @@ def calculate_magnitude(data: dict, GG_factory: list):
     data['magnitude'] = fac_magnitude
     return(data)
 
-def insert_to_db(time: str, M_L: float, focal_dep: float, longitude: float, latitude: float, magnitude_chu: float, magnitude_center: float, magnitude_south: float):
+def insert_to_db(time: datetime, M_L: float, focal_dep: float, longitude: float, latitude: float, magnitude_chu: float, magnitude_center: float, magnitude_south: float):
     a = MongoDB()
     #a = MongoDB(ip = "172.27.0.1", port = 27017)
   
