@@ -6,24 +6,27 @@ from strongtyping.strong_typing_utils import TypeMisMatch
 from typing import Optional, List, Dict, Union, Any, Tuple
 from datetime import datetime
 import pprint
-from dbAPI.db_config import IP, PORT, DB_NAME, MAX_PRSERVE_RECORD, COLLECTION_LIST
 from dbAPI.input_schema import NecessaryEarthquakeType, NecessaryElectricityType, NecessaryReservoirType
+import os
+from dotenv import load_dotenv
+
+
+
 
 @match_class_typing
 class MongoDB(Database):
     
     def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = None, collection_list:  Optional[list] = None):
         if ip == None or port == None or db_name == None or collection_list == None:
-            print("[MongoDB] At least one input is invalid or not specified. Loading db_config")
-            ip = IP
-            port = PORT
-            db_name = DB_NAME
-            collection_list = COLLECTION_LIST
+            print("[MongoDB] At least one input is invalid or not specified. Loading env")
+            load_dotenv()
+            ip = os.getenv('IP')
+            port = os.getenv('PORT')
+            db_name = os.getenv('DB_NAME')
+            collection_list = os.getenv('COLLECTION_LIST')
+
         super().__init__(ip=ip, port=port, db_name=db_name)
         self.collection_list = collection_list
-        if self.collection_list == None:
-            print("[MongoDB] None collection_list specified. Loading db_config")
-            self.collection_list = COLLECTION_LIST
 
         for collection in self.collection_list:
             self.db[collection].create_index("time")

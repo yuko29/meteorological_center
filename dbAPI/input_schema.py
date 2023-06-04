@@ -6,7 +6,7 @@ from datetime import datetime
 class NecessaryEarthquakeType(TypedDict):
     time: datetime
     factory: str
-    magnitude: int
+    magnitude: float
 
 
 @match_class_typing
