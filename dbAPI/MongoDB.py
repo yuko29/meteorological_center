@@ -1,11 +1,13 @@
 import pymongo
 import bson
 from dbAPI.Database import Database
-from strongtyping.strong_typing import match_class_typing
+from strongtyping.strong_typing import match_class_typing, match_typing
+from strongtyping.strong_typing_utils import TypeMisMatch
 from typing import Optional, List, Dict, Union, Any, Tuple
 from datetime import datetime
 import pprint
 from dbAPI.db_config import IP, PORT, DB_NAME, MAX_PRSERVE_RECORD, COLLECTION_LIST
+from dbAPI.input_schema import NecessaryEarthquakeType, NecessaryElectricityType, NecessaryReservoirType
 
 @match_class_typing
 class MongoDB(Database):
@@ -25,26 +27,18 @@ class MongoDB(Database):
 
         for collection in self.collection_list:
             self.db[collection].create_index("time")
-        self.anomaly_values = {str:"-", float:-1.0, datetime:None, list:None, int:-1}
-    
-    
-    def __filter_anomaly(self, data: dict):  # Filter out the data bad values, rules are defined in self.anomaly_values
-        for key, value in list(data.items()):
-            assert type(value) != bson.objectid.ObjectId, "[MongoDB] This data had been inserted in previous API call or exist invalid coulmn(['_id'])!\n \
-If you want to insert the data again, delete '_id' key in your input data."
-            if(self.anomaly_values[type(value)] == value):
-                data.pop(key)
 
+        self.necessary_key_for_collection = {"reservoir": NecessaryReservoirType, "earthquake":NecessaryEarthquakeType, "electricity":NecessaryElectricityType}
 
-    @staticmethod
-    def __transfer_time_type(data):
-        assert not (data.get("time") is None), "[MongoDB] Time was not provided in given data"
-        if(type(data['time'])==str):
-            data['time'] = datetime.strptime(data['time'], "%Y-%m-%d %H:%M:%S")
-        return data
+    @match_typing
+    def __check_input_type(self, data: Dict, collection: str):
+        try:
+            self.necessary_key_for_collection[collection](data)
+        except:
+            print("[MongoDB] Some necessary columns are missing or type is incorrect. Aborting...")
+            raise
 
     def __insert_into_factory_and_earthqake(self, single_data: Dict):
-        self.__filter_anomaly(single_data)
         factory_data = single_data.pop('magnitude')
         self.insert_data("earthquake", single_data)
         for factory in factory_data:
@@ -54,23 +48,27 @@ If you want to insert the data again, delete '_id' key in your input data."
             self.insert_data("factory", single_data)
 
 
-    def insert_earthquake_data(self, data: dict):
-        assert (data.get('magnitude') is not None), "[MongoDB] Magnitude for any factory was not provided in given data"
-        data = self.__transfer_time_type(data)
+    def insert_earthquake_data(self, data: Dict):
+        data_to_check=""
+        try:
+            data_to_check = data.copy()
+            print(data['magnitude'][0])
+            data_to_check['magnitude'] = data['magnitude'][0]['magnitude']
+            data_to_check['factory'] = data["magnitude"][0]['factory']
+        except:
+            print("[MongoDB] Some necessary columns are missing or type is incorrect. Aborting...")
+            raise
+        self.__check_input_type(data_to_check, "earthquake")
         self.__insert_into_factory_and_earthqake(data)
     
     
     def insert_electricity_data(self, data: dict):
-        data = self.__transfer_time_type(data)
-        assert not (data.get("region") is None), "[MongoDB] Region was not provided in electricity data"
-        self.__filter_anomaly(data)
+        self.__check_input_type(data, "electricity")
         self.insert_data("electricity", data)
         
     
     def insert_reservoir_data(self, data: dict):
-        data = self.__transfer_time_type(data)
-        assert not (data.get("name") is None), "[MongoDB] Reservoir name was not provided in reservoir data"
-        self.__filter_anomaly(data)
+        self.__check_input_type(data, "reservoir")
         self.insert_data("reservoir", data)
         
     
