@@ -14,7 +14,7 @@ from dotenv import load_dotenv
 @match_class_typing
 class MongoDB(Database):
     
-    def __init__(self, ip: Optional[str] = None, port: Optional[int]=None, db_name: Optional[str] = None, collection_list:  Optional[list] = None):
+    def __init__(self, ip: Optional[Union[str, None]] = None, port: Optional[Union[int, None]]=None, db_name: Optional[Union[str, None]] = None, collection_list:  Optional[Union[list, None]] = None):
         if ip == None or port == None or db_name == None or collection_list == None:
             print("[MongoDB] At least one input is invalid or not specified. Loading env")
             load_dotenv()
