@@ -20,7 +20,10 @@ def get_water(url: str):
     soup = BeautifulSoup(water.text, 'html.parser')
     return soup
 
-def handle_data(a, soup, re_list: list):
+def handle_data(soup, re_list: list):
+    a = MongoDB()
+    #a = MongoDB(ip = "172.27.0.1", port = 27017)
+    
     for re in re_list:
         stw = soup.find('a', string = re).find_parent().find_parent().find_all("td")
     
@@ -29,6 +32,7 @@ def handle_data(a, soup, re_list: list):
             continue
         else:
             water_time = str(stw[1].string)
+            water_time = datetime.strptime(water_time, "%Y-%m-%d %H:%M:%S")
         
         if stw[6].string == "--":
             print("[crawling] ", re, " no data crawled")
@@ -44,9 +48,15 @@ def handle_data(a, soup, re_list: list):
             water_per = float(water_per)
         
         reservoir_data = {'name': re, "time": water_time, "water_supply": water_avail, "percentage": water_per}
-        a.insert_reservoir_data(reservoir_data)
-        
-        print("[crawling] ", re, " insert data ", reservoir_data)
+        try:
+            a.insert_reservoir_data(reservoir_data)
+            print("[crawling] ", re, " insert data ", reservoir_data)
+        except:
+            print("[crawling]  Insert data failed")
+        # print("Retrieve data")
+        # print(a.retrieve_reservoir_data_by_name(quantity= 50, name = re))
+    
+    #a.reset()
     return 
 
 def main():
@@ -58,15 +68,9 @@ def main():
     print("[crawling]  Start crawling water, time:", now_time)
 
     soup = get_water(url)
-    a = MongoDB()
-    #a = MongoDB(ip = "172.27.0.1", port = 27017)
-    handle_data(a, soup, re_list)
     
-    print()
-    print("Retrieve data")
-    print(a.retrieve_reservoir_data_by_name(quantity= 50, name = "永和山水庫"))
-
-    a.reset()
+    handle_data(soup, re_list)
+    
     
 if __name__ == "__main__":
     main()

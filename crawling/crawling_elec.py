@@ -25,8 +25,8 @@ def handle_data(elec):
     
     update_time = str(elec.json()["regionData"]["updateTime"])
     update_time = update_time + ":00"
+    format_time = datetime.strptime(update_time, "%Y-%m-%d %H:%M:%S")
     
-
     northSupply = float(elec.json()["regionData"]["northSupply"])   #北部即時發電量
     southSupply = float(elec.json()["regionData"]["southSupply"])   #南部即時發電量
     centerSupply = float(elec.json()["regionData"]["centerSupply"]) #中部即時發電量
@@ -37,32 +37,29 @@ def handle_data(elec):
     centerUsage = float(elec.json()["regionData"]["centerUsage"]) #中部即時用電量
     Usage = [northUsage, southUsage, centerUsage]
 
-    return update_time, Supply, Usage
+    return format_time, Supply, Usage
 
-def insert_to_db(update_time:str, Supply: list, Usage: list):
+def insert_to_db(update_time: datetime, region: str, power_usage: float, power_generate: float):
     
-    Electricity_north = {'region':"北", 'power_usage': Usage[0], 'power_generate': Supply[0], 'time': update_time}
-    Electricity_center = {'region':"中", 'power_usage': Usage[1], 'power_generate': Supply[1], 'time': update_time}
-    Electricity_south = {'region':"南", 'power_usage': Usage[2], 'power_generate': Supply[2], 'time': update_time}
+    Electricity = {'region':region, 'power_usage': power_usage, 'power_generate': power_generate, 'time': update_time}
     
-    a = MongoDB()
     #a = MongoDB(ip = "172.27.0.1", port = 27017)
-    a.insert_electricity_data(Electricity_north)
-    print("[crawling]  Insert data: ", Electricity_north)
-    a.insert_electricity_data(Electricity_center)
-    print("[crawling]  Insert data: ", Electricity_center)
-    a.insert_electricity_data(Electricity_south)
-    print("[crawling]  Insert data: ", Electricity_south)
+    a = MongoDB()
+    try:
+        a.insert_electricity_data(Electricity)
+        print("[crawling]  Insert data: ", Electricity)
+    except:
+        print("[crawling]  Insert data failed")
 
-    print(f"\n\n\nRETRIEVING ELECTRICITY...\n\n")
-    for i in a.retrieve_electricity_data_by_region(quantity= 50,region="北"):
-        print(i)
-    #print(Electricity_north)
-    #print(Electricity_center)
-    #print(Electricity_south)
+    # print(f"\nRETRIEVING ELECTRICITY...\n")
+    # for i in a.retrieve_electricity_data_by_region(quantity= 50,region = region):
+    #     print(i)
+    # print()
+    return
 
 def main():
     url = "https://www.taiwanstat.com/powers/latest/"
+    region_list = ['北', '中', '南']
     
     now_time = get_now_time()
     print("------------------")
@@ -70,7 +67,9 @@ def main():
     
     elec = get_elec(url)
     update_time, Supply, Usage = handle_data(elec)
-    insert_to_db(update_time, Supply, Usage)
+    
+    for i in range(3):
+        insert_to_db(update_time, region_list[i], Supply[i], Usage[i])
     
     
 if __name__ == "__main__":
