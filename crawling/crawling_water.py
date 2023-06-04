@@ -58,8 +58,8 @@ def main():
     print("[crawling]  Start crawling water, time:", now_time)
 
     soup = get_water(url)
-    #a = MongoDB()
-    a = MongoDB(ip = "172.27.0.1", port = 27017)
+    a = MongoDB()
+    #a = MongoDB(ip = "172.27.0.1", port = 27017)
     handle_data(a, soup, re_list)
     
     print()
