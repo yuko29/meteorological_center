@@ -21,7 +21,7 @@ class MongoDB(Database):
             ip = os.getenv('IP')
             port = int(os.getenv('PORT'))
             db_name = os.getenv('DB_NAME')
-            collection_list = os.getenv('COLLECTION_LIST')
+            collection_list = os.getenv('COLLECTION_LIST').split(",")
 
         super().__init__(ip=ip, port=port, db_name=db_name)
         self.collection_list = collection_list
