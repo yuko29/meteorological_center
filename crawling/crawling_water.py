@@ -3,6 +3,13 @@ import requests
 from datetime import datetime,timezone,timedelta
 from dbAPI.MongoDB import MongoDB
 
+def get_now_time():
+    dtUTC = datetime.utcnow().replace(tzinfo = timezone.utc) #UTC
+    dtUTC_8 = dtUTC.astimezone(timezone(timedelta(hours = 8))) #UTC+8
+    now_time = dtUTC_8.strftime("%Y-%m-%d %H:%M:%S")
+    
+    return now_time
+
 def get_water(url: str):
     try:
         water = requests.get(url) #將此頁面的HTML GET下來
@@ -46,9 +53,7 @@ def main():
     url = "https://fhy.wra.gov.tw/ReservoirPage_2011/Statistics.aspx"
     re_list = ["石門水庫", "寶山第二水庫", "永和山水庫", "鯉魚潭水庫", "德基水庫", "南化水庫", "曾文水庫", "烏山頭水庫"]
     
-    dtUTC = datetime.utcnow().replace(tzinfo = timezone.utc) #UTC
-    dtUTC_8 = dtUTC.astimezone(timezone(timedelta(hours = 8))) #UTC+8
-    now_time = dtUTC_8.strftime("%Y-%m-%d %H:%M:%S")
+    now_time = get_now_time()
     print("------------------")
     print("[crawling]  Start crawling water, time:", now_time)
 
