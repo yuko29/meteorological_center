@@ -53,7 +53,6 @@ class MongoDB(Database):
         data_to_check=""
         try:
             data_to_check = data.copy()
-            print(data['magnitude'][0])
             data_to_check['magnitude'] = data['magnitude'][0]['magnitude']
             data_to_check['factory'] = data["magnitude"][0]['factory']
         except:
