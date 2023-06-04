@@ -145,7 +145,7 @@ def main():
     
     now_time = get_now_time()
     print("------------------")
-    print("[crawling]  Start crawling water, time:", now_time)
+    print("[crawling]  Start crawling earthquake, time:", now_time)
     
     earthQuake = crawl_data(url)
     earthQuake = calculate_magnitude(earthQuake, GG_factory)
