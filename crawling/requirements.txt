@@ -11,4 +11,4 @@ urllib3==2.0.2
 strongtyping==2.2.3
 typing==3.7.4.3
 DateTime==5.1
-dotenv
+python-dotenv
