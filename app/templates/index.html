@@ -45,18 +45,18 @@
     <div class="main">
         <div class="main__container">
             <div class="main__content">
-                <h1>電力</h1>
+                <h1><img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">電力</h1>
                 <h3>即時發電量</h3>
-                <p id="Electricity_value">0</p>
+                <p id="electricity_value">-</p>
                 <h3>當日最大發電容量</h3>
-                <p id="Electricity_maximum">0</p>
+                <p id="electricity_maximum">-</p>
             </div>
             <div class="main__content">
-                <h1>地震</h1>
+                <h1><img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">地震</h1>
                 <h3>最近發生時間</h3>
-                <p id="Earthquake_time">01/01 00:00</p>
+                <p id="earthquake_time">1990/01/01 AM 00:00</p>
                 <h3>震度</h3>
-                <p id="Earthquake_magnitude">0強</p>
+                <p id="earthquake_magnitude">-</p>
                 <h3></h3>
             </div>
         </div>
@@ -66,18 +66,21 @@
             <h1>水情資訊</h1>
             <div class="grid__container">
                 <div class="reservoir__content">
-                    <h3 id="Reservoir_name_1">一號水庫</h3>
-                    <p id="Reservoir_percentage_1">0%</p>
+                    <h3 id="reservoir_name_1">一號水庫</h3>
+                    <p id="reservoir_percentage_1">- %</p>
+                    <h3 id="reservoir_time_1">最後更新時間: 1990/01/01 AM 00:00</h3>
                 </div>
                 <div class="reservoir__content">
-                    <h3 id="Reservoir_name_2">二號水庫</h3>
-                    <p id="Reservoir_percentage_2">0%</p>
+                    <h3 id="reservoir_name_2">二號水庫</h3>
+                    <p id="reservoir_percentage_2">- %</p>
+                    <h3 id="reservoir_time_2">最後更新時間: 1990/01/01 AM 00:00</h3>
                 </div>
                 <div class="reservoir__content">
-                    <h3 id="Reservoir_name_3">永和山水庫</h3>
-                    <p id="Reservoir_percentage_3">0%</p>
+                    <h3 id="reservoir_name_3">永和山水庫</h3>
+                    <p id="reservoir_percentage_3">- %</p>
+                    <h3 id="reservoir_time_3">最後更新時間: 1990/01/01 AM 00:00</h3>
                 </div>
-            </div>
+            </div>  
         </div>
     
         <!-- Footer Section -->
@@ -132,28 +135,38 @@
 
         function update_data(data) {
             // 獲取需要更新的元素
-            const electricityValueElement = document.getElementById('Electricity_value');
-            const electricityMaximumElement = document.getElementById('Electricity_maximum');
-            const earthquakeTimeElement = document.getElementById('Earthquake_time');
-            const earthquakeMagnitudeElement = document.getElementById('Earthquake_magnitude');
-            const reservoirName1Element = document.getElementById('Reservoir_name_1');
-            const reservoirPercentage1Element = document.getElementById('Reservoir_percentage_1');
-            const reservoirName2Element = document.getElementById('Reservoir_name_2');
-            const reservoirPercentage2Element = document.getElementById('Reservoir_percentage_2');
-            const reservoirName3Element = document.getElementById('Reservoir_name_3');
-            const reservoirPercentage3Element = document.getElementById('Reservoir_percentage_3');
-        
+            const electricityValueElement = document.getElementById('electricity_value');
+            const electricityMaximumElement = document.getElementById('electricity_maximum');
+
+            const earthquakeTimeElement = document.getElementById('earthquake_time');
+            const earthquakeMagnitudeElement = document.getElementById('earthquake_magnitude');
+
+            const reservoirName1Element = document.getElementById('reservoir_name_1');
+            const reservoirPercentage1Element = document.getElementById('reservoir_percentage_1');
+            const reservoirTime1Element = document.getElementById('reservoir_time_1');
+
+            const reservoirName2Element = document.getElementById('reservoir_name_2');
+            const reservoirPercentage2Element = document.getElementById('reservoir_percentage_2');
+            const reservoirTime2Element = document.getElementById('reservoir_time_2');
+
+            const reservoirName3Element = document.getElementById('reservoir_name_3');
+            const reservoirPercentage3Element = document.getElementById('reservoir_percentage_3');
+            const reservoirTime3Element = document.getElementById('reservoir_time_3');
+
             // 更新元素的內容為最新的數據
-            electricityValueElement.textContent = data.Electricity_value;
-            electricityMaximumElement.textContent = data.Electricity_maximum;
-            earthquakeTimeElement.textContent = data.Earthquake_time;
-            earthquakeMagnitudeElement.textContent = data.Earthquake_magnitude;
-            reservoirName1Element.textContent = data.Reservoir_name_1;
-            reservoirPercentage1Element.textContent = data.Reservoir_percentage_1;
-            reservoirName2Element.textContent = data.Reservoir_name_2;
-            reservoirPercentage2Element.textContent = data.Reservoir_percentage_2;
-            reservoirName3Element.textContent = data.Reservoir_name_3;
-            reservoirPercentage3Element.textContent = data.Reservoir_percentage_3;
+            electricityValueElement.textContent = data.electricity_value;
+            electricityMaximumElement.textContent = data.electricity_maximum;
+            earthquakeTimeElement.textContent = data.earthquake_time;
+            earthquakeMagnitudeElement.textContent = data.earthquake_magnitude;
+            reservoirName1Element.textContent = data.reservoir_name_1;
+            reservoirPercentage1Element.textContent = data.reservoir_percentage_1;
+            reservoirTime1Element.textContent = data.reservoir_time_1;
+            reservoirName2Element.textContent = data.reservoir_name_2;
+            reservoirPercentage2Element.textContent = data.reservoir_percentage_2;
+            reservoirTime2Element.textContent = data.reservoir_time_2;
+            reservoirName3Element.textContent = data.reservoir_name_3;
+            reservoirPercentage3Element.textContent = data.reservoir_percentage_3;
+            reservoirTime3Element.textContent = data.reservoir_time_3;
         }
         
     </script>
