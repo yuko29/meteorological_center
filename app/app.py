@@ -9,7 +9,9 @@ app.debug = True
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    warn_electricity = False
+    warn_earthquake = True
+    return render_template('index.html', warn_earthquake=warn_earthquake, warn_electricity=warn_electricity)
 
 @app.route('/<path:filename>', methods=['GET'])
 def serve_static(filename):
@@ -83,7 +85,7 @@ electricity_mapping = {
 }
 
 
-def update_factory_data(factory: str, all_data: dict):
+def update_factory_data(factory: str, all_data: dict):    # Retrieve data from database and return a json(dict) to frontend
     print(f"[Backend] Click {factory} !")
     
     if factory not in factory_list:

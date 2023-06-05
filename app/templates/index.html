@@ -45,14 +45,25 @@
     <div class="main">
         <div class="main__container">
             <div class="main__content">
-                <h1><img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">電力</h1>
+                <h1>
+                    <!-- Show warning icons if warn_electricity is true -->
+                    {% if warn_electricity %}   
+                    <img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">
+                    {% endif %}
+                    電力
+                </h1>
                 <h3>即時發電量</h3>
                 <p id="electricity_value">-</p>
                 <h3>當日最大發電容量</h3>
                 <p id="electricity_maximum">-</p>
             </div>
             <div class="main__content">
-                <h1><img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">地震</h1>
+                <h1>
+                    {% if warn_earthquake %}
+                    <img class="warning" src="static/Ambox_warning_yellow.svg.png" width="70px" style="background-color: transparent; padding-right:10px">
+                    {% endif %}
+                    地震
+                </h1>
                 <h3>最近發生時間</h3>
                 <p id="earthquake_time">1990/01/01 AM 00:00</p>
                 <h3>震度</h3>
