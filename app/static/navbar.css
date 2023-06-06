@@ -98,6 +98,10 @@
     color: #f77062;
     transition: all 0.3s ease;
   }
+
+  .navbar__links.active {
+    color: #f77062;
+  }
   
   @media screen and (max-width: 960px) {
     .navbar__container {
