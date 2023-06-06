@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request, send_from_directory
 from dbAPI.MongoDB import MongoDB
 from datetime import datetime
+import logging
 
 app = Flask(__name__)
 app.debug = True
@@ -9,7 +10,9 @@ app.debug = True
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    warn_electricity = False
+    warn_earthquake = True
+    return render_template('index.html', warn_earthquake=warn_earthquake, warn_electricity=warn_electricity)
 
 @app.route('/<path:filename>', methods=['GET'])
 def serve_static(filename):
@@ -21,7 +24,7 @@ def toggle_menu():
     menu_state = request.args.get('menu_state')
     menu_links_state = request.args.get('menu_links_state')
 
-    print("click toggle_menu !")
+    logging.warning("click toggle_menu !")
 
     return jsonify({'message': 'Menu toggled successfully'})
 
@@ -83,28 +86,28 @@ electricity_mapping = {
 }
 
 
-def update_factory_data(factory: str, all_data: dict):
-    print(f"[Backend] Click {factory} !")
+def update_factory_data(factory: str, all_data: dict):    # Retrieve data from database and return a json(dict) to frontend
+    logging.info(f"[Backend] Click {factory} !")
     
     if factory not in factory_list:
-        print(f"[Backend] update_factory_data(): Factory {factory} not found !")
+        logging.info(f"[Backend] update_factory_data(): Factory {factory} not found !")
         return jsonify({'message': 'Factory not found'}), 404
     
     try:    # earthquake
         earthquake_query = db.retrieve_earthquake_data_by_factory(factory=earthquake_mapping.get(factory), quantity=1)[0]
-        print(f"[Backend] Query Earthquake SUCESS: {earthquake_query}")
+        logging.info(f"[Backend] Query Earthquake SUCESS: {earthquake_query}")
         all_data.get(factory)["earthquake_time"] = earthquake_query["time"].strftime("%Y/%m/%d %p %I:%M")
         all_data.get(factory)["earthquake_magnitude"] = earthquake_query["magnitude"]
     except:
-        print(f"[Backend] Query Earthquake FAIL: {factory}")
+        logging.warning(f"[Backend] Query Earthquake FAIL: {factory}")
         
     try:    # electricity
         electricity_query = db.retrieve_electricity_data_by_region(region=electricity_mapping.get(factory), quantity=1,)[0]
-        print(f"[Backend] Query Electricity SUCESS: {electricity_query}")
+        logging.info(f"[Backend] Query Electricity SUCESS: {electricity_query}")
         all_data.get(factory)["electricity_value"] = electricity_query["power_usage"]
         all_data.get(factory)["electricity_maximum"] = electricity_query["power_generate"]
     except:
-        print(f"[Backend] Query Electricity FAIL: {factory}")
+        logging.warning(f"[Backend] Query Electricity FAIL: {factory}")
     
     try:    # reservoir
         if(factory == "taichung"):  # Taichung only has 2 reservoirs
@@ -114,11 +117,11 @@ def update_factory_data(factory: str, all_data: dict):
 
         for i, reservoir in enumerate(reservoir_list.get(factory), start=1):
             reservoir_query = db.retrieve_reservoir_data_by_name(name=reservoir, quantity=3)[0]
-            print(f"[Backend] Query Reservoir SUCESS: {reservoir_query}")
+            logging.info(f"[Backend] Query Reservoir SUCESS: {reservoir_query}")
             all_data.get(factory)[f"reservoir_percentage_{i}"] = reservoir_query["percentage"]
             all_data.get(factory)[f"reservoir_time_{i}"] = reservoir_query["time"].strftime("%Y/%m/%d %p %I:%M")
     except:
-        print(f"[Backend] Query Reservoir FAIL: {factory} !")
+        logging.warning(f"[Backend] Query Reservoir FAIL: {factory} !")
     
 @app.route('/hsinchu', methods=['GET'])
 def hsinchu():
@@ -143,4 +146,4 @@ def tainan():
 db = MongoDB()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

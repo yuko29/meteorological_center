@@ -45,14 +45,18 @@
     <div class="main">
         <div class="main__container">
             <div class="main__content">
-                <h1>電力</h1>
+                <h1 id="warn_electricity">
+                    電力
+                </h1>
                 <h3>即時發電量</h3>
                 <p id="electricity_value">-</p>
                 <h3>當日最大發電容量</h3>
                 <p id="electricity_maximum">-</p>
             </div>
             <div class="main__content">
-                <h1>地震</h1>
+                <h1 id="warn_earthquake">
+                    地震
+                </h1>
                 <h3>最近發生時間</h3>
                 <p id="earthquake_time">1990/01/01 AM 00:00</p>
                 <h3>震度</h3>
@@ -89,85 +93,16 @@
         </div>
     </div>
 
-    <script>
-        // RWD Design
-        const menu = document.querySelector('#mobile-menu');
-        const menuLinks = document.querySelector('.navbar__menu');
 
-        menu.addEventListener('click', function() {
-            // 使用 AJAX 請求發送菜單狀態
-            const xhr = new XMLHttpRequest();
-            const menuState = menu.classList.contains('is-active') ? 'active' : 'inactive';
-            const menuLinksState = menuLinks.classList.contains('active') ? 'active' : 'inactive';
-            const url = '/toggle_menu?menu_state=' + menuState + '&menu_links_state=' + menuLinksState;
+    <!--   Core JS Files   -->
+    <script src={{ url_for("static", filename="assets/js/core/jquery.min.js") }} type="text/javascript"></script>
+    <script src={{ url_for("static", filename="assets/js/core/popper.min.js") }} type="text/javascript"></script>
+    <script src={{ url_for("static", filename="assets/js/core/bootstrap.min.js") }} type="text/javascript"></script>
+    <script src={{ url_for("static", filename="assets/js/plugins/perfect-scrollbar.jquery.min.js") }}></script>
 
-            xhr.open('GET', url, true);
-            xhr.send();
-        });
+    <script src={{ url_for("static", filename="app.js") }} type="text/javascript"></script>
 
-        // 獲取連結
-        const hsinchuLink = document.querySelector('#hsinchu');
-        const taichungLink = document.querySelector('#taichung');
-        const tainanLink = document.querySelector('#tainan');
         
-        // 定義共用的點擊事件處理函數
-        function handle_click(event, url) {
-            event.preventDefault(); // 阻止超連結的默認行為
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.send();
-
-            // 接收響應並更新頁面數據
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                    // 接收頁面數據
-                    const response = JSON.parse(xhr.responseText);
-                    // 更新頁面數據
-                    update_data(response.data)
-                }
-            };
-        }
-
-        // 添加點擊事件監聽器
-        hsinchuLink.addEventListener('click', function(event) {handle_click(event, '/hsinchu');});
-        taichungLink.addEventListener('click', function(event) {handle_click(event, '/taichung');});
-        tainanLink.addEventListener('click', function(event) {handle_click(event, '/tainan');});
-
-        function update_data(data) {
-            // 獲取需要更新的元素
-            const electricityValueElement = document.getElementById('electricity_value');
-            const electricityMaximumElement = document.getElementById('electricity_maximum');
-
-            const earthquakeTimeElement = document.getElementById('earthquake_time');
-            const earthquakeMagnitudeElement = document.getElementById('earthquake_magnitude');
-
-            const reservoirName1Element = document.getElementById('reservoir_name_1');
-            const reservoirPercentage1Element = document.getElementById('reservoir_percentage_1');
-            const reservoirTime1Element = document.getElementById('reservoir_time_1');
-
-            const reservoirName2Element = document.getElementById('reservoir_name_2');
-            const reservoirPercentage2Element = document.getElementById('reservoir_percentage_2');
-            const reservoirTime2Element = document.getElementById('reservoir_time_2');
-
-            const reservoirName3Element = document.getElementById('reservoir_name_3');
-            const reservoirPercentage3Element = document.getElementById('reservoir_percentage_3');
-            const reservoirTime3Element = document.getElementById('reservoir_time_3');
-
-            // 更新元素的內容為最新的數據
-            electricityValueElement.textContent = data.electricity_value;
-            electricityMaximumElement.textContent = data.electricity_maximum;
-            earthquakeTimeElement.textContent = data.earthquake_time;
-            earthquakeMagnitudeElement.textContent = data.earthquake_magnitude;
-            reservoirName1Element.textContent = data.reservoir_name_1;
-            reservoirPercentage1Element.textContent = data.reservoir_percentage_1;
-            reservoirTime1Element.textContent = data.reservoir_time_1;
-            reservoirName2Element.textContent = data.reservoir_name_2;
-            reservoirPercentage2Element.textContent = data.reservoir_percentage_2;
-            reservoirTime2Element.textContent = data.reservoir_time_2;
-            reservoirName3Element.textContent = data.reservoir_name_3;
-            reservoirPercentage3Element.textContent = data.reservoir_percentage_3;
-            reservoirTime3Element.textContent = data.reservoir_time_3;
-        }
         
     </script>
 </body>
