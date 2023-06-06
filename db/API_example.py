@@ -1,4 +1,5 @@
 from dbAPI.MongoDB import MongoDB
+from datetime import datetime
 
 earthEqake_test = {'time': '2023-5-12 03:40:52', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
 earthEqake_test2 = {'time': '2023-5-12 03:40:51', 'M_L': 3.6, 'focal_dep': 3.2, 'longitude': 41.0, 'latitude': 20.7, 'magnitude': [{'factory': '竹', 'magnitude': 0.00032644588703523386}, {'factory': '中', 'magnitude': 0.00019905740360289052}, {'factory': '南', 'magnitude': 0.0003714193582435097}]}
@@ -16,6 +17,12 @@ a = MongoDB()
 # a.exampleAPI()
 # a.exampleAPI2()
 
+earthEqake_test['time'] =  datetime.strptime(earthEqake_test['time'], "%Y-%m-%d %H:%M:%S")
+earthEqake_test2['time'] =  datetime.strptime(earthEqake_test2['time'], "%Y-%m-%d %H:%M:%S")
+electricity_test['time'] =  datetime.strptime(electricity_test['time'], "%Y-%m-%d %H:%M:%S")
+electricity_test2['time'] =  datetime.strptime(electricity_test2['time'], "%Y-%m-%d %H:%M:%S")
+reservoir_test['time'] =  datetime.strptime(reservoir_test['time'], "%Y-%m-%d %H:%M:%S")
+reservoir_test2['time'] =  datetime.strptime(reservoir_test2['time'], "%Y-%m-%d %H:%M:%S")
 
 
 a.insert_earthquake_data(earthEqake_test)
