@@ -3,7 +3,7 @@ services:
     # build:
     #   context: db
     #   target: DB
-    image: "mongo:latest"
+    image: "mongo:7.0-rc"
     restart: unless-stopped
     container_name: mongodb
     ports:

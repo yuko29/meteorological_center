@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flaskapp-svc
+spec:
+  selector:
+    app: flaskapp
+  ports:
+    - port: 8000
+      targetPort: 5000
+  type: LoadBalancer
