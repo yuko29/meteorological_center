@@ -23,9 +23,8 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with unittest
         run: |
-          python3 -m unittest unittest_MongoDB.py > /dev/null
+          python3 -m coverage run unittest_MongoDB.py > /dev/null
 
       - name: Test Coverage
         run: |
-          coverage run -m unittest unittest_MongoDB.py
-          coverage report
+          python3 -m coverage report -m
